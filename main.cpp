@@ -265,14 +265,6 @@ void updateStudentsList(){//Actializa en firstStudent en cada admin
 
 void burnedData(){
 
-    //agergar admins
-
-    addAdmin("Veronica Brenes", 1, "Female");
-    addAdmin("Christian Gonzales", 2, "Male");
-    addAdmin("Monica Speer", 3, "Female");
-    addAdmin("Julio Cesar", 4, "Male");
-    addAdmin("Sonia Rojas", 5, "Female");
-
     //agergar profes
 
     addTeacher("Lonera Picado", 1, "Female");
@@ -289,15 +281,29 @@ void burnedData(){
     addStudent("Bryam Lopez", 1, "Male");
     addStudent("Josue Orozco", 4, "Male");
 
+    //agregar cursos
+
+    
+
+    //agergar admins
+
+    addAdmin("Veronica Brenes", 1, "Female");
+    addAdmin("Christian Gonzales", 2, "Male");
+    addAdmin("Monica Speer", 3, "Female");
+    addAdmin("Julio Cesar", 4, "Male");
+    addAdmin("Sonia Rojas", 5, "Female");
+
 }
 
 int main(){
 
     burnedData();
     imprime();
+
+    /*
     updateTeachersList();
     updateStudentsList();
-
+    */
 
     return 0;
 }
