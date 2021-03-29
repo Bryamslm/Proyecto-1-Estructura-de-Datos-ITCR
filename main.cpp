@@ -69,14 +69,14 @@ struct Students{
 struct Courses{
     string name;
     string code;
-    int group;
+    int credits;
     Courses*next;
 
-    Courses(string n, string c, int g) {
+    Courses(string n, string c, int cred) {
 
         name=n;
         code=c;
-        group=g;
+        credits=cred;
         next=NULL;
     }
 }*firstCourse;
@@ -109,10 +109,12 @@ struct LinkTeacher{
 
     LinkTeacher*next;
     Courses*course;
+    int group;
 
-    LinkTeacher(){
+    LinkTeacher(int g){
         next=NULL;
         course=NULL;
+        group=g;
     }
 
 };
@@ -274,10 +276,10 @@ Courses*searchCourse(string code){//busca teacher a ver si ya existe, retorna NU
     return NULL;
 }
 
-bool addCourse(string name, string code, int group){//función que agrega aprofesor a lista doble con inserción al inicio
+bool addCourse(string name, string code, int credits){//función que agrega aprofesor a lista doble con inserción al inicio
 
     if(firstCourse==NULL){//si lista de profes está vacía se agrega nuevo profe
-        Courses*nn = new Courses(name, code, group);
+        Courses*nn = new Courses(name, code, credits);
         firstCourse=nn;
         firstCourse->next=firstCourse; //se hace la lista circular
         return true;
@@ -289,7 +291,7 @@ bool addCourse(string name, string code, int group){//función que agrega aprofe
 
             return false;
         }else{
-            Courses*nn= new Courses(name, code, group);//crea al admin
+            Courses*nn= new Courses(name, code, credits);//crea al admin
 
             Courses*temp= firstCourse;
 
@@ -341,7 +343,7 @@ void updateStudentsList(){//Actializa en firstStudent en cada admin
     }
 }
 
-bool relateTeacherCourse(int idTeacher, string codeCourse){
+bool relateTeacherCourse(int idTeacher, string codeCourse, int group){
     Teachers*teacher=searchTeacher(idTeacher);
     if(teacher==NULL){
         cout<<"\nThe teacher is not in the list, the link cannot be made"<<endl;
@@ -353,7 +355,7 @@ bool relateTeacherCourse(int idTeacher, string codeCourse){
         return false;
     }
 
-    LinkTeacher*nn=new LinkTeacher();
+    LinkTeacher*nn=new LinkTeacher(group);
     nn->course=course;
 
     LinkTeacher*temp=teacher->link;
@@ -361,10 +363,24 @@ bool relateTeacherCourse(int idTeacher, string codeCourse){
         teacher->link=nn;
         return true;
     }else{
-        while(temp->next != NULL){
+       do{
+           /*
+            * Este ciclo al mismo tiempo que busca posicionarse en la ultima posición de la lista para agregar el
+            * nuevo curso al profesor también comprueba que el curso y grupo no se metan de manera repetida al
+            * mismo profesor, por eso es un ciclo do while
+            */
+            if(temp->course->code == nn->course->code && temp->group == nn->group){
+                cout<<"This teacher has already assigned this group and course"<<endl;
+                return false;
+            }
+            if(temp->next==NULL){
+                break;
+            }
             temp=temp->next;
-        }
+        } while(temp != NULL);
         temp->next=nn;
+
+        return true;
     }
 }
 
@@ -388,11 +404,12 @@ void burnedData(){
 
     //agregar cursos
 
-    addCourse("Estructuta de Datos", "CA1101", 50);
-    addCourse("Programacion Orientada a Objetos", "CA1298", 50);
-    addCourse("Calculo Diferencial e Integral", "MA1226", 51);
-    addCourse("Arquitectura de Computadores", "CA1103", 50);
-    addCourse("Introduccion a la Programacion", "CA1558", 50);
+    addCourse("Estructuta de Datos", "CA1101", 3);
+    addCourse("Programacion Orientada a Objetos", "CA1298", 3);
+    addCourse("Calculo Diferencial e Integral", "MA1226", 4);
+    addCourse("Matematicas Discretas", "MA7878", 4);
+    addCourse("Arquitectura de Computadores", "CA1103", 4);
+    addCourse("Introduccion a la Programacion", "CA1558", 3);
 
     //agergar admins
 
@@ -404,7 +421,13 @@ void burnedData(){
 
     //Relacionar profesor con curso
 
-    relateTeacherCourse(5, "MA1226");
+    relateTeacherCourse(5, "MA1226", 51);
+    relateTeacherCourse(5, "MA7878", 53);
+    relateTeacherCourse(2, "CA1558", 50);
+    relateTeacherCourse(1, "CA1101", 51);
+    relateTeacherCourse(3, "CA1103", 52);
+    relateTeacherCourse(4, "CA1298", 52);
+
 
 }
 
