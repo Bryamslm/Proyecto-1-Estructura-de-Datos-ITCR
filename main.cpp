@@ -142,18 +142,22 @@ struct Meeting{
 
     Meeting*next;
     int id;
-    int month;
+    int hour;
+    int minute;
     int day;
-    string hour;
+    int month;
+    int year;
     string meetingTitle;
 
-    Meeting(int iD, string h, int mo, int d, string tm){
+    Meeting(int iD, int hourr, int minutee, int dayy, int monthh, int yearr, string title){
 
         id=iD;
-        hour=h;
-        month=mo;
-        day=d;
-        meetingTitle=tm;
+        hour=hourr;
+        minute=minutee;
+        day=dayy;
+        month=monthh;
+        year=yearr;
+        meetingTitle=title;
         next=NULL;
 
     }
@@ -489,7 +493,7 @@ bool relateStudentCourse(int idStudent, string codeCourse, int group){
     }
 }
 
-bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int mouth, int day, string hour, string titleMeeting){
+bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, int minute, int day, int month, int year, string titleMeeting){
 
     Teachers*teacher=searchTeacher(idTeacher);//si retorna  NULL el teacher no existe, sino ya existe
 
@@ -545,7 +549,7 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int mouth, 
 
         if(temp->course->code == codeCourse){
 
-            Meeting*nn= new Meeting(idMeeting, hour, mouth, day, titleMeeting);
+            Meeting*nn= new Meeting(idMeeting, hour, minute, day, month, year, titleMeeting);
 
             if(temp->firstMeeting==NULL){
                 teacher->link->firstMeeting=nn;
@@ -620,10 +624,8 @@ void burnedData(){
 
    //Asignar reuinión a un profesor
 
-   meetingTeacher(5, "MA1226", 1, 4, 6, "16:10", "Clase calculo");
-   meetingTeacher(5, "MA1226", 2, 4, 6, "08:15", "Clase calculo");
-   meetingTeacher(5, "MA1226", 3, 4, 8, "16:10", "Clase calculo");
-    meetingTeacher(5, "MA7878", 4, 4, 8, "07:50", "Clase Discreta");
+   meetingTeacher(5, "MA1226",1,  13, 10, 29, 03, 2020,  "Clase calculo");
+   meetingTeacher(5, "MA1226",2,  7, 50, 29, 03, 2020,  "Clase calculo");
 }
 
 void menu(){
