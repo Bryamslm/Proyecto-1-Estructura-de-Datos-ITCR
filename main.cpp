@@ -144,16 +144,20 @@ struct Meeting{
     int id;
     int hour;
     int minute;
+    int hourEnd;
+    int minuteEnd;
     int day;
     int month;
     int year;
     string meetingTitle;
 
-    Meeting(int iD, int hourr, int minutee, int dayy, int monthh, int yearr, string title){
+    Meeting(int iD, int hourr, int minutee, int hourEndd, int minuteEndd,int dayy, int monthh, int yearr, string title){
 
         id=iD;
         hour=hourr;
         minute=minutee;
+        hourEnd=hourEndd;
+        minuteEnd=minuteEndd;
         day=dayy;
         month=monthh;
         year=yearr;
@@ -493,7 +497,13 @@ bool relateStudentCourse(int idStudent, string codeCourse, int group){
     }
 }
 
-bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, int minute, int day, int month, int year, string titleMeeting){
+bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, int minute, int hourE, int minuteE,int day, int month, int year, string titleMeeting){
+
+    if(hourE< hour){
+        cout<<"\nThe end time must be greater than the start time"<<endl;
+    }else if(hourE== hour && minuteE < minute){
+        cout<<"\nThe end time must be greater than the start time"<<endl;
+    }
 
     Teachers*teacher=searchTeacher(idTeacher);//si retorna  NULL el teacher no existe, sino ya existe
 
@@ -549,7 +559,7 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
 
         if(temp->course->code == codeCourse){
 
-            Meeting*nn= new Meeting(idMeeting, hour, minute, day, month, year, titleMeeting);
+            Meeting*nn= new Meeting(idMeeting, hour, minute, hourE, minuteE, day, month, year, titleMeeting);
 
             if(temp->firstMeeting==NULL){
                 teacher->link->firstMeeting=nn;
@@ -561,11 +571,18 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
                      * Este ciclo a parte de recorrer los enlaces de cursos verifica que el profesor no tenga otra
                      * reunión a la misma hora, el mismo día, mes y año
                      */
+
+                    //comprueba que no se programe una reunionen el mismo tiempo que otra
                     if(temp2->year==nn->year && temp2->month == nn->month && temp2->day==nn->day && temp2->hour==nn->hour && temp2->minute==nn->minute){
                         cout<<"\nThe meeting cannot be assigned because this teacher already has a meeting at the same"<<
                         " time, day, month and year"<<endl;
                         return false;
                     }
+                    //comprueba que no se programe una reunion cuando otra estará en curso
+                   if(temp2->year==nn->year && temp2->month == nn->month && temp2->day==nn->day && temp2->hourEnd >= nn->hour && temp2->minuteEnd > nn->minute){
+                       cout<<"\nYou cannot schedule the meeting because you will be in another meeting at that time"<<endl;
+                       return false;
+                   }
                     if(temp2->next==NULL){
                         break;
                     }
@@ -636,12 +653,13 @@ void burnedData(){
 
     //Asignar reuinión a un profesor
 
-    meetingTeacher(5, "MA1226",1,  13, 10, 29, 03, 2020,  "clase magistral");
-    meetingTeacher(5, "MA1226",2,  7, 50, 29, 03, 2020,  "clase magistral");
-    meetingTeacher(4, "CA1298",3,  7, 50, 29, 03, 2020,  "clase magistral");
-    meetingTeacher(3, "CA1103",4,  7, 50, 29, 03, 2020,  "clase magistral");
-    meetingTeacher(2, "CA1558",5,  7, 50, 29, 03, 2020,  "clase magistral");
-    meetingTeacher(1, "CA1101",6,  7, 50, 29, 03, 2020,  "clase magistral");
+    meetingTeacher(5, "MA1226",1,  13, 10, 16, 55,29, 03, 2021,  "clase magistral");
+    meetingTeacher(5, "MA1226",2,  16, 55, 18, 30,29, 03, 2021,  "clase magistral");
+    meetingTeacher(5, "MA1226",7,  15, 10, 19, 30,02, 04, 2021,  "clase magistral");
+    meetingTeacher(4, "CA1298",3,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
+    meetingTeacher(3, "CA1103",4,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
+    meetingTeacher(2, "CA1558",5,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
+    meetingTeacher(1, "CA1101",6,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
 
 }
 
