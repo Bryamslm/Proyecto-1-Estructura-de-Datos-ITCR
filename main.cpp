@@ -18,11 +18,19 @@ struct Teachers*searchTeacher(string, int);
 bool addTeacher(string, int, string);
 struct Students*searchStudent(string, int);
 bool addStudent(string, int, string);
+struct Courses*searchCourse(string);
+bool addCourse(string, string, int);
 void updateTeachersList();
 void updateStudentsList();
 void imprime();
+struct LinkTeacher;
+struct Students;
+struct Courses;
+struct Administrators;
+struct LinkTeacher;
 
 //------ end prototype section -----
+
 
 struct Teachers{
     string fullName;
@@ -30,6 +38,7 @@ struct Teachers{
     string gender;
     Teachers*next;
     Teachers*previous;
+    LinkTeacher*link;
 
     Teachers(string fn, int i, string g){
         fullName=fn;
@@ -37,6 +46,7 @@ struct Teachers{
         gender=g;
         next=NULL;
         previous=NULL;
+        link=NULL;
     }
 
 }*firstTeacher;
@@ -95,6 +105,18 @@ struct Administrators{
     }
 }*firstAdmin;
 
+struct LinkTeacher{
+
+    LinkTeacher*next;
+    Courses*course;
+
+    LinkTeacher(){
+        next=NULL;
+        course=NULL;
+    }
+
+};
+
 Administrators*searchAdmin(string fullName, int id){//busca admin a ver si ya existe, retorna NULL si no está
 
     Administrators*temp=firstAdmin;
@@ -137,16 +159,12 @@ bool addAdmin(string fullName, int id, string gender){//función que agrega admi
     }
 }
 
-Teachers*searchTeacher(string fullName, int id){//busca teacher a ver si ya existe, retorna NULL si no está
+Teachers*searchTeacher(int id){//busca teacher a ver si ya existe, retorna NULL si no está
 
     Teachers*temp=firstTeacher;
 
     while(temp != NULL){
-        if(temp->fullName==fullName){//Lo busca por nombre
-            cout<<"\nThe name is already part of the teachers\n"<<endl;
-            return temp;
-        }else if(temp->id==id){//Lo busca por ID
-            cout<<"\nThe ID is already part of the teachers\n"<<endl;
+        if(temp->id==id){//Lo busca por ID
             return temp;
         }
         temp=temp->next;
@@ -162,7 +180,7 @@ bool addTeacher(string fullName, int id, string gender){//función que agrega ap
         firstTeacher=nn;
         return true;
     }else{
-        Teachers*teacher=searchTeacher(fullName, id);//si retorna  NULL el teacher no existe, sino ya existe
+        Teachers*teacher=searchTeacher(id);//si retorna  NULL el teacher no existe, sino ya existe
 
         if(teacher != NULL){//esta el teacher
             cout<<"Teacher could not be added"<<endl;
@@ -248,7 +266,6 @@ Courses*searchCourse(string code){//busca teacher a ver si ya existe, retorna NU
 
     do{
         if(temp->code == code){
-            cout<<"\nThe course already exists"<<endl;
             return temp;
         }
         temp=temp->next;
@@ -324,6 +341,33 @@ void updateStudentsList(){//Actializa en firstStudent en cada admin
     }
 }
 
+bool relateTeacherCourse(int idTeacher, string codeCourse){
+    Teachers*teacher=searchTeacher(idTeacher);
+    if(teacher==NULL){
+        cout<<"\nThe teacher is not in the list, the link cannot be made"<<endl;
+        return false;
+    }
+    Courses*course=searchCourse(codeCourse);
+    if(course==NULL){
+        cout<<"\nThe course is not in the list, the link cannot be made"<<endl;
+        return false;
+    }
+
+    LinkTeacher*nn=new LinkTeacher();
+    nn->course=course;
+
+    LinkTeacher*temp=teacher->link;
+    if(temp==NULL){
+        teacher->link=nn;
+        return true;
+    }else{
+        while(temp->next != NULL){
+            temp=temp->next;
+        }
+        temp->next=nn;
+    }
+}
+
 void burnedData(){
 
     //agergar profes
@@ -358,12 +402,16 @@ void burnedData(){
     addAdmin("Julio Cesar", 4, "Male");
     addAdmin("Sonia Rojas", 5, "Female");
 
+    //Relacionar profesor con curso
+
+    relateTeacherCourse(5, "MA1226");
+
 }
 
 int main(){
 
     burnedData();
-    imprime();
+
     /*
     updateTeachersList();
     updateStudentsList();
