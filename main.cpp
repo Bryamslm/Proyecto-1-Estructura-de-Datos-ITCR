@@ -498,9 +498,50 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int mouth, 
 
         return false;
     }
-    LinkTeacher*temp= teacher->link;
 
+    Teachers*tempTeacher= firstTeacher;
+    while(tempTeacher != NULL){
+
+        /*
+         * Este ciclo recorre cada profesor de la lista
+         */
+
+        LinkTeacher*tempLink=tempTeacher->link;
+        while(tempLink != NULL){
+
+            /*
+             * Este ciclo recorre cada enlace a curso de profesor
+             */
+
+            Meeting*tempMeeting=tempLink->firstMeeting;
+            while(tempMeeting != NULL){
+                /*
+                 * Este ciclo recorre cada reunion de de cada enlace de curso de profesor
+                 */
+
+                if(tempMeeting->id == idMeeting){
+
+                    /*
+                     * si el ID de la reunion es igual al ID que se quiere usar, es una restricción por tanto retorna false
+                     * no se asigna la reuinión
+                     */
+                    cout<<"\nThere is another meeting with this ID assigned"<<endl;
+                    return false;
+                }
+                tempMeeting=tempMeeting->next;
+            }
+            tempLink=tempLink->next;
+        }
+        tempTeacher=tempTeacher->next;
+    }
+
+    LinkTeacher*temp= teacher->link;
     while(temp != NULL){
+
+        /*
+         * este ciclo recorre cada enlace de curso en busca del curso donde de debe asignar la reunion, sino encuentra
+         * el enlace del curso es porque el curso no esta siendo impartido, por lo tanto no se puede asignar la reunion
+         */
 
         if(temp->course->code == codeCourse){
 
@@ -585,9 +626,38 @@ void burnedData(){
     meetingTeacher(5, "MA7878", 4, 4, 8, "07:50", "Clase Discreta");
 }
 
+void menu(){
+    int hora=0;
+    char c;
+    int minutos=0;
+    char d;
+    int dia = 0;
+    int mes = 0;
+    int anio = 0;
+    char a;
+    char b;
+    while(true) {
+        cout<<"Ingrese la hora actual (ejemplo: 15:20/29/03/2021): " ;
+        cin >> hora >> c >> minutos >> d >> dia >> a >> mes >> b >> anio;
+
+        if (hora >= 0 && hora <= 23 && c == ':' && minutos >= 0 && minutos <= 59 && d == '/' && dia > 0 && dia < 32 &&
+            a == '/' && mes > 0 && mes < 13 && b == '/' && anio > 2020 && anio < 2022) {
+
+            cout << "\nLa fecha es correcta" << endl;
+            break;
+
+        }else{
+            cout << "Incorrecto el formato: HHHH/DD/MM/AAAA";
+        }
+    }
+}
+
+
 int main() {
 
     burnedData();
+
+    menu();
 
     /*
     updateTeachersList();
