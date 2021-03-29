@@ -29,6 +29,7 @@ struct Courses;
 struct Administrators;
 struct LinkTeacher;
 struct LinkStudent;
+struct Meeting;
 
 //------ end prototype section -----
 
@@ -113,11 +114,13 @@ struct LinkTeacher{
     LinkTeacher*next;
     Courses*course;
     int group;
+    Meeting*firstMeeting;
 
     LinkTeacher(int g){
         next=NULL;
         course=NULL;
         group=g;
+        firstMeeting=NULL;
     }
 
 };
@@ -131,6 +134,28 @@ struct LinkStudent{
         next=NULL;
         course=NULL;
         group=g;
+    }
+
+};
+
+struct Meeting{
+
+    Meeting*next;
+    int id;
+    int month;
+    int day;
+    string hour;
+    string meetingTitle;
+
+    Meeting(int iD, string h, int mo, int d, string tm){
+
+        id=iD;
+        hour=h;
+        month=mo;
+        day=d;
+        meetingTitle=tm;
+        next=NULL;
+
     }
 
 };
@@ -464,6 +489,41 @@ bool relateStudentCourse(int idStudent, string codeCourse, int group){
     }
 }
 
+bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int mouth, int day, string hour, string titleMeeting){
+
+    Teachers*teacher=searchTeacher(idTeacher);//si retorna  NULL el teacher no existe, sino ya existe
+
+    if(teacher == NULL){//esta el teacher
+        cout<<"Teacher not found"<<endl;
+
+        return false;
+    }
+    LinkTeacher*temp= teacher->link;
+
+    while(temp != NULL){
+
+        if(temp->course->code == codeCourse){
+
+            Meeting*nn= new Meeting(idMeeting, hour, mouth, day, titleMeeting);
+
+            if(temp->firstMeeting==NULL){
+                teacher->link->firstMeeting=nn;
+                return true;
+            }else{
+                Meeting*temp2=temp->firstMeeting;
+                while(temp2->next != NULL){
+                    temp2=temp2->next;
+                }
+                temp2->next=nn;
+                return true;
+            }
+        }
+        temp=temp->next;
+    }
+    cout<<"The meeting cannot be assigned to this course because the teacher does not teach the course"<<endl;
+    return false;
+}
+
 void burnedData(){
 
     //agergar profes
@@ -508,7 +568,7 @@ void burnedData(){
     relateTeacherCourse(3, "CA1103", 52);
     relateTeacherCourse(4, "CA1298", 52);
 
-    //Relacionar profesor con curso
+    //Relacionar estudiante con curso
 
     relateStudentCourse(5, "MA1226", 51);
     relateStudentCourse(2, "MA7878", 53);
@@ -517,10 +577,15 @@ void burnedData(){
     relateStudentCourse(1, "CA1103", 52);
     relateStudentCourse(1, "CA1298", 52);
 
+   //Asignar reuinión a un profesor
 
+   meetingTeacher(5, "MA1226", 1, 4, 6, "16:10", "Clase calculo");
+   meetingTeacher(5, "MA1226", 2, 4, 6, "08:15", "Clase calculo");
+   meetingTeacher(5, "MA1226", 3, 4, 8, "16:10", "Clase calculo");
+    meetingTeacher(5, "MA7878", 4, 4, 8, "07:50", "Clase Discreta");
 }
 
-int main(){
+int main() {
 
     burnedData();
 
