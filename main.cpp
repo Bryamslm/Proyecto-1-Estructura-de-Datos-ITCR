@@ -14,6 +14,13 @@ using namespace std;
 void burnedData();
 bool addAdmin(string, int, string);
 struct Administrators*searchAdmin(string, int);
+struct Teachers*searchTeacher(string, int);
+bool addTeacher(string, int, string);
+struct Students*searchStudent(string, int);
+bool addStudent(string, int, string);
+void updateTeachersList();
+void updateStudentsList();
+void imprime();
 
 //------ end prototype section -----
 
@@ -50,8 +57,18 @@ struct Students{
 }*firstStudent;
 
 struct Courses{
-
+    string name;
     string code;
+    int group;
+    Courses*next;
+
+    Courses(string n, string c, int g) {
+
+        name=n;
+        code=c;
+        group=g;
+        next=NULL;
+    }
 }*firstCourse;
 
 struct Administrators{
@@ -225,13 +242,57 @@ bool addStudent(string fullName, int id, string gender){//función que agrega es
     }
 }
 
-void imprime(){
-    Students*temp=firstStudent;
+Courses*searchCourse(string code){//busca teacher a ver si ya existe, retorna NULL si no está
 
-    while(temp != NULL){
-        cout<<temp->id<<endl;
+    Courses*temp=firstCourse;
+
+    do{
+        if(temp->code == code){
+            cout<<"\nThe course already exists"<<endl;
+            return temp;
+        }
         temp=temp->next;
+    } while(temp != firstCourse);
+
+    return NULL;
+}
+
+bool addCourse(string name, string code, int group){//función que agrega aprofesor a lista doble con inserción al inicio
+
+    if(firstCourse==NULL){//si lista de profes está vacía se agrega nuevo profe
+        Courses*nn = new Courses(name, code, group);
+        firstCourse=nn;
+        firstCourse->next=firstCourse; //se hace la lista circular
+        return true;
+    }else{
+        Courses*course=searchCourse(code);//si retorna  NULL el teacher no existe, sino ya existe
+
+        if(course != NULL){//esta el teacher
+            cout<<"Course could not be added"<<endl;
+
+            return false;
+        }else{
+            Courses*nn= new Courses(name, code, group);//crea al admin
+
+            Courses*temp= firstCourse;
+
+            while(temp->next != firstCourse){
+                temp=temp->next;
+            }
+            temp->next=nn;
+            nn->next=firstCourse;
+            return true;
+        }
     }
+}
+
+void imprime(){
+    Courses*temp=firstCourse;
+
+    do{
+        cout<<temp->name<<endl;
+        temp=temp->next;
+    }while(temp != firstCourse);
 }
 
 void updateTeachersList(){//Actializa en firstTeacher en cada admin
@@ -283,7 +344,11 @@ void burnedData(){
 
     //agregar cursos
 
-    
+    addCourse("Estructuta de Datos", "CA1101", 50);
+    addCourse("Programacion Orientada a Objetos", "CA1298", 50);
+    addCourse("Calculo Diferencial e Integral", "MA1226", 51);
+    addCourse("Arquitectura de Computadores", "CA1103", 50);
+    addCourse("Introduccion a la Programacion", "CA1558", 50);
 
     //agergar admins
 
@@ -299,7 +364,6 @@ int main(){
 
     burnedData();
     imprime();
-
     /*
     updateTeachersList();
     updateStudentsList();
