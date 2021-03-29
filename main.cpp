@@ -28,6 +28,7 @@ struct Students;
 struct Courses;
 struct Administrators;
 struct LinkTeacher;
+struct LinkStudent;
 
 //------ end prototype section -----
 
@@ -56,12 +57,14 @@ struct Students{
     int id;
     string gender;
     Students*next;
+    LinkStudent*link;
 
     Students(string fn, int i, string g){
         fullName=fn;
         id=i;
         gender=g;
         next=NULL;
+        link=NULL;
     }
 
 }*firstStudent;
@@ -112,6 +115,19 @@ struct LinkTeacher{
     int group;
 
     LinkTeacher(int g){
+        next=NULL;
+        course=NULL;
+        group=g;
+    }
+
+};
+struct LinkStudent{
+
+    LinkStudent*next;
+    Courses*course;
+    int group;
+
+    LinkStudent(int g){
         next=NULL;
         course=NULL;
         group=g;
@@ -200,17 +216,12 @@ bool addTeacher(string fullName, int id, string gender){//función que agrega ap
     }
 }
 
-Students*searchStudent(string fullName, int id){//busca student a ver si ya existe, retorna NULL si no está
+Students*searchStudent(int id){//busca student a ver si ya existe, retorna NULL si no está
 
     Students*temp=firstStudent;
 
     while(temp != NULL){//do while por si hay solo un elemnto en lista
-        if (temp->fullName == fullName) {
-            cout<<"\nThe name is already part of the students\n"<<endl;
-            return temp;
-        }
         if(temp->id == id){
-            cout<<"\nThe ID is already part of the students\n"<<endl;
             return temp;
         }
         temp=temp->next;
@@ -226,7 +237,7 @@ bool addStudent(string fullName, int id, string gender){//función que agrega es
         firstStudent=nn;
         return true;
     }else{
-        Students*student = searchStudent(fullName, id);//si retorna  NULL el estudiante no existe, sino ya existe
+        Students*student = searchStudent(id);//si retorna  NULL el estudiante no existe, sino ya existe
 
         if(student != NULL){//esta el estudiante
             cout<<"Student could not be added"<<endl;
@@ -384,6 +395,75 @@ bool relateTeacherCourse(int idTeacher, string codeCourse, int group){
     }
 }
 
+bool relateStudentCourse(int idStudent, string codeCourse, int group){
+    Students*student=searchStudent(idStudent);//se busca a estudiante en lista
+    if(student==NULL){
+        cout<<"\nThe student is not in the list, the link cannot be made"<<endl;
+        return false;
+    }
+    Courses*course=searchCourse(codeCourse);//se busca curso en lista
+    if(course==NULL){
+        cout<<"\nThe course is not in the list, the link cannot be made"<<endl;
+        return false;
+    }
+
+    bool courseFoud=false;//variable para comprobar si el curso está siendo impartido
+
+    Teachers*tempT=firstTeacher;
+    while(tempT != NULL){
+        /*
+         * Este ciclo comprueba que el curso esté siendo impartido por un profesor para poder asignarselo a un estudiante
+         * si el curso sí está siendo impartido la variable courseFound cambia a true, si no cambia al terminar todo
+         * el ciclo while el curso no está siendo impartido, aunque esté en la lista de curso
+         */
+        LinkTeacher*tempL=tempT->link;
+        while(tempL != NULL){
+            if(tempL->course == course && tempL->group == group){
+                courseFoud=true;
+                break;
+            }
+            tempL=tempL->next;
+        }
+        if(courseFoud){
+            break;
+        }
+        tempT=tempT->next;
+
+    }
+    if(courseFoud==false){
+        cout<<"\nThe course cannot be added because no teacher is teaching it"<<endl;
+        return false;
+    }
+
+    LinkStudent*nn=new LinkStudent(group);
+    nn->course=course;
+
+    LinkStudent*temp=student->link;
+    if(temp==NULL){
+        student->link=nn;
+        return true;
+    }else{
+        do{
+            /*
+             * Este ciclo al mismo tiempo que busca posicionarse en la ultima posición de la lista para agregar el
+             * nuevo curso al estudiante también comprueba que el curso y grupo no se metan de manera repetida al
+             * mismo estudiante, por eso es un ciclo do while
+             */
+            if(temp->course->code == nn->course->code && temp->group == nn->group){
+                cout<<"This student has already assigned this group and course"<<endl;
+                return false;
+            }
+            if(temp->next==NULL){
+                break;
+            }
+            temp=temp->next;
+        } while(temp != NULL);
+        temp->next=nn;
+
+        return true;
+    }
+}
+
 void burnedData(){
 
     //agergar profes
@@ -427,6 +507,15 @@ void burnedData(){
     relateTeacherCourse(1, "CA1101", 51);
     relateTeacherCourse(3, "CA1103", 52);
     relateTeacherCourse(4, "CA1298", 52);
+
+    //Relacionar profesor con curso
+
+    relateStudentCourse(5, "MA1226", 51);
+    relateStudentCourse(2, "MA7878", 53);
+    relateStudentCourse(3, "CA1558", 50);
+    relateStudentCourse(4, "CA1101", 51);
+    relateStudentCourse(1, "CA1103", 52);
+    relateStudentCourse(1, "CA1298", 52);
 
 
 }
