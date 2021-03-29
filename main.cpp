@@ -556,9 +556,21 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
                 return true;
             }else{
                 Meeting*temp2=temp->firstMeeting;
-                while(temp2->next != NULL){
+               do{
+                    /*
+                     * Este ciclo a parte de recorrer los enlaces de cursos verifica que el profesor no tenga otra
+                     * reunión a la misma hora, el mismo día, mes y año
+                     */
+                    if(temp2->year==nn->year && temp2->month == nn->month && temp2->day==nn->day && temp2->hour==nn->hour && temp2->minute==nn->minute){
+                        cout<<"\nThe meeting cannot be assigned because this teacher already has a meeting at the same"<<
+                        " time, day, month and year"<<endl;
+                        return false;
+                    }
+                    if(temp2->next==NULL){
+                        break;
+                    }
                     temp2=temp2->next;
-                }
+                }while(temp2 != NULL);
                 temp2->next=nn;
                 return true;
             }
@@ -622,11 +634,17 @@ void burnedData(){
     relateStudentCourse(1, "CA1103", 52);
     relateStudentCourse(1, "CA1298", 52);
 
-   //Asignar reuinión a un profesor
+    //Asignar reuinión a un profesor
 
-   meetingTeacher(5, "MA1226",1,  13, 10, 29, 03, 2020,  "Clase calculo");
-   meetingTeacher(5, "MA1226",2,  7, 50, 29, 03, 2020,  "Clase calculo");
+    meetingTeacher(5, "MA1226",1,  13, 10, 29, 03, 2020,  "clase magistral");
+    meetingTeacher(5, "MA1226",2,  7, 50, 29, 03, 2020,  "clase magistral");
+    meetingTeacher(4, "CA1298",3,  7, 50, 29, 03, 2020,  "clase magistral");
+    meetingTeacher(3, "CA1103",4,  7, 50, 29, 03, 2020,  "clase magistral");
+    meetingTeacher(2, "CA1558",5,  7, 50, 29, 03, 2020,  "clase magistral");
+    meetingTeacher(1, "CA1101",6,  7, 50, 29, 03, 2020,  "clase magistral");
+
 }
+
 
 void menu(){
     int hora=0;
@@ -659,7 +677,7 @@ int main() {
 
     burnedData();
 
-    menu();
+    //menu();
 
     /*
     updateTeachersList();
