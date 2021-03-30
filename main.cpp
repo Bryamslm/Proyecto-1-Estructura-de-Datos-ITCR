@@ -30,6 +30,7 @@ struct Administrators;
 struct LinkTeacher;
 struct LinkStudent;
 struct Meeting;
+struct SublistAssistance;
 
 //------ end prototype section -----
 
@@ -129,13 +130,25 @@ struct LinkStudent{
     LinkStudent*next;
     Courses*course;
     int group;
+    SublistAssistance*sublistAssistance;
 
     LinkStudent(int g){
         next=NULL;
         course=NULL;
         group=g;
+        sublistAssistance=NULL;
     }
 
+};
+
+struct SublistAssistance{
+    int id;
+    SublistAssistance*next;
+
+    SublistAssistance(int iD){
+        id=iD;
+        next=NULL;
+    }
 };
 
 struct Meeting{
@@ -598,6 +611,69 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
     return false;
 }
 
+
+bool meetingStudent(int idStudent, string codeCourse, int courseGroup, int idMeeting){
+    Students*student=searchStudent(idStudent);
+    if(student==NULL){
+        cout<<"\nStudent not found"<<endl;
+        return false;
+    }
+    LinkStudent*temp=student->link;
+    while(temp != NULL){
+        /*
+         * Este ciclo busca el enlace que tiene el curso y grupo para registrar la asistencia
+         */
+        if(temp->course->code==codeCourse && temp->group==courseGroup){
+            Teachers*temp2=firstTeacher;
+            while(temp2 != NULL){
+                /*
+                 * Este ciclo recorre la lista de profesores
+                 */
+                LinkTeacher*temp3=temp2->link;
+                while(temp3 != NULL){
+                    /*
+                     * este ciclo recorre la lista de enlace del profesor
+                     */
+                    Meeting*temp4=temp3->firstMeeting;
+                    while(temp4 != NULL){
+                        /*
+                         * este ciclo recorre la lista de reuniones que está en cada enlace de cada profesor
+                         */
+                        if(temp4->id==idMeeting){
+                            /*
+                             * si el id de la reuion es igual al pasado por parametro sí se asistió
+                             */
+                            SublistAssistance*nn=new SublistAssistance(idMeeting);
+                            if(student->link->sublistAssistance==NULL){
+                                student->link->sublistAssistance=nn;
+                                return true;
+                            }else{
+                                SublistAssistance*temp5=student->link->sublistAssistance;
+
+                                while(temp5->next != NULL){
+                                    temp5=temp5->next;
+                                }
+                                temp5->next=nn;
+                                return true;
+                            }
+                        }
+                        temp4=temp4->next;
+                    }
+                    temp3=temp3->next;
+                }
+                temp2=temp2->next;
+            }
+
+        }
+        temp=temp->next;
+    }
+    /*
+     * si se llega hasta aquí es porque no se encontro un el id de reunion por lo tanto no se participó
+     */
+    cout<<"\nThe student did not attend the meeting"<<endl;
+    return false;
+}
+
 void burnedData(){
 
     //agergar profes
@@ -661,6 +737,11 @@ void burnedData(){
     meetingTeacher(2, "CA1558",5,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
     meetingTeacher(1, "CA1101",6,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
 
+
+    //Estudiantes indican reunion en la que participaron
+
+    meetingStudent(5, "MA1226", 51, 1);
+    meetingStudent(5, "MA1226", 51, 2);
 }
 
 
