@@ -699,7 +699,7 @@ bool meetingStudent(int idStudent, string codeCourse, int courseGroup, int idMee
     cout<<"\nThe student did not attend the meeting"<<endl;
     return false;
 }
-void ModifyTeacher(int id){
+void modifyTeacher(int id){
 
     Teachers*teacher = searchTeacher(id);
     if(teacher==NULL){
@@ -744,7 +744,7 @@ void ModifyTeacher(int id){
 
         while(true) {
             //Miestras el ID no sea válido se pedirá
-            cout << "\nWrite new ID: ";
+            cout << "\nWrite new ID (only numbers): ";
             cin >> newId;
             Teachers *teacher2 = searchTeacher(newId);
             if (teacher2 == NULL) {
@@ -791,7 +791,7 @@ bool deleteTeacher(int id){
         return true;
     }
 }
-void ModifyStudent(int id){
+void modifyStudent(int id){
 
     Students*student= searchStudent(id);
 
@@ -838,7 +838,7 @@ void ModifyStudent(int id){
 
         while(true) {
             //Miestras el ID no sea válido se pedirá
-            cout << "\nWrite new ID: ";
+            cout << "\nWrite new ID (only numbers): ";
             cin >> newId;
             Teachers *teacher2 = searchTeacher(newId);
             if (teacher2 == NULL) {
@@ -876,7 +876,7 @@ bool deleteStudent(int id){
     cout<<"\nDelete successful!"<<endl;
     return true;
 }
-void ModifyCourse(string code){
+void modifyCourse(string code){
 
     Courses*course= searchCourse(code);
 
@@ -932,18 +932,39 @@ void ModifyCourse(string code){
             cout << "\nThis code is not available, please try another" << endl;
         }
 
-
     }
 }
 
-void imprime(){
-    Students*temp=firstStudent;
+bool deleteCourse(string code){
+    Courses*course= searchCourse(code);
 
-    while(temp != NULL){
-        cout<<temp->fullName<<endl;
+    if(course==NULL){
+        cout<<"\nCourse not found"<<endl;
+        return false;
+    }
+
+    Courses*temp=firstCourse;
+
+    while (temp->next != course){
+        temp=temp->next;
+    }
+    temp->next=course->next;
+
+    if(course=firstCourse){
+        firstCourse=course->next;
+    }
+    cout<<"\nDelete successful!"<<endl;
+    return true;
+}
+
+void imprime(){
+    Courses*temp=firstCourse;
+
+   do{
+        cout<<temp->code<<endl;
         temp=temp->next;
 
-    }
+    } while(temp != firstCourse);
 
 }
 
@@ -1019,23 +1040,38 @@ void burnedData(){
 
     //----Modificar profesor------
 
-    //ModifyTeacher(5);
+    //modifyTeacher(5);
+
 
     //------Delete teacher------
 
     //deleteTeacher(1);
     //deleteTeacher(3);
 
+
     //------Modificar estudiante------
 
-    //ModifyStudent(5);
+    //modifyStudent(5);
+
 
     //------Borrar estudiante------
     //deleteStudent(1);
 
+
     //------Modificar curso------
 
-    ModifyCourse("CA1298");
+    //modifyCourse("CA1298");
+
+    //modifyCourse("CA1558");
+
+
+    //------Borrar curso------
+
+    //deleteCourse("CA1101");
+
+
+    //Modificar Pofesor con curso
+
 
 
 }
