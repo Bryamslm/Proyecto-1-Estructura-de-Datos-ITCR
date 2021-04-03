@@ -514,8 +514,10 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
 
     if(hourE< hour){
         cout<<"\nThe end time must be greater than the start time"<<endl;
+        return false;
     }else if(hourE== hour && minuteE < minute){
         cout<<"\nThe end time must be greater than the start time"<<endl;
+        return false;
     }
 
     Teachers*teacher=searchTeacher(idTeacher);//si retorna  NULL el teacher no existe, sino ya existe
@@ -527,9 +529,12 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
     }
 
     Teachers*tempTeacher= firstTeacher;
+
     while(tempTeacher != NULL){
 
+
         /*
+         * Ciclo para buscar que ID no este asignado a otra reunion
          * Este ciclo recorre cada profesor de la lista
          */
 
@@ -563,6 +568,7 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
     }
 
     LinkTeacher*temp= teacher->link;
+
     while(temp != NULL){
 
         /*
@@ -612,6 +618,12 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
 }
 
 
+int anio=2021;
+int mes=04;
+int dia=04;
+int hora=17;
+int minuto=00;
+
 bool meetingStudent(int idStudent, string codeCourse, int courseGroup, int idMeeting){
     Students*student=searchStudent(idStudent);
     if(student==NULL){
@@ -643,7 +655,28 @@ bool meetingStudent(int idStudent, string codeCourse, int courseGroup, int idMee
                             /*
                              * si el id de la reuion es igual al pasado por parametro sí se asistió
                              */
-                            SublistAssistance*nn=new SublistAssistance(idMeeting);
+                            if(temp4->year > anio) {
+                                cout << "1Attendance cannot be added because the meeting has not passed yet" << endl;
+                                return false;
+                            }
+                            if(temp4->month > mes) {
+                                cout << "2Attendance cannot be added because the meeting has not passed yet" << endl;
+                                return false;
+                            }
+                            if(temp4->month == mes && temp4->day > dia) {
+                                cout << "3Attendance cannot be added because the meeting has not passed yet" << endl;
+                                return false;
+                            }
+                            if(temp4->day == dia && temp4->hour > hora) {
+                                cout << "4Attendance cannot be added because the meeting has not passed yet" << endl;
+                                return false;
+                            }
+                            if(temp4->hour == hora && temp4->minute > minuto) {
+                                cout << "5Attendance cannot be added because the meeting has not passed yet" << endl;
+                                return false;
+                            }
+
+                            SublistAssistance* nn=new SublistAssistance(idMeeting);
                             if(student->link->sublistAssistance==NULL){
                                 student->link->sublistAssistance=nn;
                                 return true;
@@ -745,7 +778,12 @@ void burnedData(){
 }
 
 
+
+
+/*
 void menu(){
+
+
     int hora=0;
     char c;
     int minutos=0;
@@ -770,7 +808,7 @@ void menu(){
         }
     }
 }
-
+*/
 
 int main() {
 
