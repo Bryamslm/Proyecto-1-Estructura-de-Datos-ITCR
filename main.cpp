@@ -1,4 +1,6 @@
 #include <iostream>
+#include <conio.h>
+#include <string.h>
 using namespace std;
 
 /*
@@ -253,8 +255,8 @@ bool addTeacher(string fullName, int id, string gender){//función que agrega ap
         }else{
             Teachers*nn= new Teachers(fullName, id, gender);//crea al admin
 
-            firstTeacher->previous=nn;
             nn->next=firstTeacher;
+            firstTeacher->previous=nn;
             firstTeacher=nn;
 
             return true;
@@ -360,15 +362,6 @@ bool addCourse(string name, string code, int credits){//función que agrega apro
             return true;
         }
     }
-}
-
-void imprime(){
-    Courses*temp=firstCourse;
-
-    do{
-        cout<<temp->name<<endl;
-        temp=temp->next;
-    }while(temp != firstCourse);
 }
 
 void updateTeachersList(){//Actializa en firstTeacher en cada admin
@@ -706,6 +699,192 @@ bool meetingStudent(int idStudent, string codeCourse, int courseGroup, int idMee
     cout<<"\nThe student did not attend the meeting"<<endl;
     return false;
 }
+void ModifyTeacher(int id){
+
+    Teachers*teacher = searchTeacher(id);
+    if(teacher==NULL){
+        cout<<"\nTeacher not found"<<endl;
+        return;
+    }
+
+    string option;
+    cout<<"\nThis is the information of this teacher:"<<endl;
+
+    cout<<"Full name: "<<teacher->fullName<<"\nGender: "<<teacher->gender<<"\nId: "<<teacher->id<<endl;
+
+    cout<<"What do you want to modify?\n1- Full name\n2- Gender\n3- ID"<<endl;
+
+    cout<<"Select an option: ";
+
+    cin>>option;
+
+    if(option=="1"){
+
+        string name;
+        cout<<"\nWrite new full name: ";
+
+
+        teacher->fullName=name;
+
+        cout<<"\nModification successful!"<<endl;
+        return;
+    }else if(option=="2"){
+        string gender;
+        cout<<"\nWrite new gender: ";
+        cin>>gender;
+
+        teacher->gender=gender;
+
+        cout<<"\nModification successful!"<<endl;
+
+        return;
+    }else if(option=="3"){
+
+        int newId;
+
+        while(true) {
+            //Miestras el ID no sea válido se pedirá
+            cout << "\nWrite new ID: ";
+            cin >> newId;
+            Teachers *teacher2 = searchTeacher(newId);
+            if (teacher2 == NULL) {
+                teacher->id=newId;
+                cout<<"\nModification successful!"<<endl;
+                return;
+            }
+            cout << "\nThis ID is not available, please try another" << endl;
+        }
+
+
+    }
+}
+bool deleteTeacher(int id){
+    Teachers*teacher= searchTeacher(id);
+    if(teacher==NULL) {
+        cout << "Teacher not found" << endl;
+        return false;
+    }
+    if(firstTeacher==teacher){
+        //Si el que se debe borrar es el primero de lista, solo se hace que el siguiente en previos apunte a NULL
+        // y se redefine el firstTeacher como el segundo de la lista :)
+        Teachers*temp=firstTeacher->next;
+        temp->previous=NULL;
+        firstTeacher=temp;
+        cout<<"\nDelete successful! first"<<endl;
+        return true;
+    } else if(teacher->next==nullptr){//Con el NULL no sirve, CLion me lo autocorrigió puso nullptr y sirvió
+        cout<<"\nend";
+        //Si el que se debe borrar es el último de lista, solo se hace que el que está de penultimo apunte a NULL
+        Teachers*temp2=teacher->previous;
+        temp2->next=NULL;
+        cout<<"\nDelete successful! first last"<<endl;
+        return true;
+    }else{
+        //Si el que se debe borrar tiene anterior y siguiente diferentes de NULL, solo se hace que el anterior
+        //apunte en next al que está apuntando el que se va a borrar en siguiente y ese siguinte en previous apunte
+        //al que está antes del que se va a borrar, basicamente se deja de apuntar al que se va a borrar
+        Teachers*temp3=teacher->previous;
+        Teachers*temp4=teacher->next;
+        temp3->next=temp4;
+        temp4->previous=temp3;
+        cout<<"\nDelete successful! first central"<<endl;
+        return true;
+    }
+}
+void ModifyStudent(int id){
+
+    Students*student= searchStudent(id);
+
+    if(student==NULL){
+        cout<<"\nTeacher not found"<<endl;
+        return;
+    }
+
+    string option;
+    cout<<"\nThis is the information of this student:"<<endl;
+
+    cout<<"Full name: "<<student->fullName<<"\nGender: "<<student->gender<<"\nId: "<<student->id<<endl;
+
+    cout<<"What do you want to modify?\n1- Full name\n2- Gender\n3- ID"<<endl;
+
+    cout<<"Select an option: ";
+
+    cin>>option;
+
+    if(option=="1"){
+        string name;
+        cout<<"\nWrite new full name: ";
+
+
+        student->fullName=name;
+
+        cout<<"\nModification successful!"<<endl;
+
+        return;
+    }else if(option=="2"){
+        string gender;
+        cout<<"\nWrite new gender: ";
+        cin>>gender;
+
+        student->gender=gender;
+
+        cout<<"\nModification successful!"<<endl;
+
+        return;
+    }else if(option=="3"){
+
+        int newId;
+
+        while(true) {
+            //Miestras el ID no sea válido se pedirá
+            cout << "\nWrite new ID: ";
+            cin >> newId;
+            Teachers *teacher2 = searchTeacher(newId);
+            if (teacher2 == NULL) {
+                student->id=newId;
+                cout<<"\nModification successful!"<<endl;
+                return;
+            }
+            cout << "\nThis ID is not available, please try another" << endl;
+        }
+
+
+    }
+}
+bool deleteStudent(int id){
+
+    Students*student=searchStudent(id);
+    if(student==NULL){
+        cout << "Student not found" << endl;
+        return false;
+    }
+
+    if(student==firstStudent){
+        firstStudent=firstStudent->next;
+        cout<<"\nDelete successful!"<<endl;
+        return true;
+    }
+
+    Students*temp=firstStudent;
+
+    while(temp->next != student){
+        temp=temp->next;
+    }
+    temp->next=student->next;
+
+    cout<<"\nDelete successful!"<<endl;
+    return true;
+}
+
+void imprime(){
+    Students*temp=firstStudent;
+
+    while(temp != NULL){
+        cout<<temp->fullName<<endl;
+        temp=temp->next;
+
+    }
+}
 
 void burnedData(){
 
@@ -775,11 +954,33 @@ void burnedData(){
 
     meetingStudent(5, "MA1226", 51, 1);
     meetingStudent(5, "MA1226", 51, 2);
+
+
+    //----Modificar profesor------
+
+    //ModifyTeacher(5);
+
+    //------Delete teacher------
+
+    //deleteTeacher(1);
+    //deleteTeacher(3);
+
+    //------Modificar estudiante------
+
+    ModifyStudent(5);
+
+    //------Borrar estudiante------
+    deleteStudent(1);
+
+
+    imprime();
+
 }
 
 
-
-
+//-----------------------
+//ARRIBA DEL MÉTODO MEETINGSTUDENT ESTAN VARIABLES SIMULANDO UNA FECHA, PARA NO ESTAR INGRESANDO POR CONSOLA TANTO
+//-------------------------
 /*
 void menu(){
 
