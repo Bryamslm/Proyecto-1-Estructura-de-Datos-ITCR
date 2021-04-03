@@ -723,7 +723,7 @@ void ModifyTeacher(int id){
         string name;
         cout<<"\nWrite new full name: ";
 
-
+        cin>>name;
         teacher->fullName=name;
 
         cout<<"\nModification successful!"<<endl;
@@ -815,6 +815,7 @@ void ModifyStudent(int id){
         string name;
         cout<<"\nWrite new full name: ";
 
+        cin>>name;
 
         student->fullName=name;
 
@@ -875,6 +876,65 @@ bool deleteStudent(int id){
     cout<<"\nDelete successful!"<<endl;
     return true;
 }
+void ModifyCourse(string code){
+
+    Courses*course= searchCourse(code);
+
+    if(course==NULL){
+        cout<<"\nTCourse not found"<<endl;
+        return;
+    }
+    string option;
+    cout<<"\nThis is the information of this course:"<<endl;
+
+    cout<<"Name: "<<course->name<<"\nCredits: "<<course->credits<<"\nCode: "<<course->code<<endl;
+
+    cout<<"What do you want to modify?\n1- Name\n2- Credits\n3- Code"<<endl;
+
+    cout<<"Select an option: ";
+
+    cin>>option;
+
+    if(option=="1"){
+        string name;
+        cout<<"\nWrite new name: ";
+
+        cin>>name;
+        course->name=name;
+
+        cout<<"\nModification successful!"<<endl;
+
+        return;
+    }else if(option=="2"){
+        int credits;
+        cout<<"\nWrite new credits number: ";
+        cin>>credits;
+
+        course->credits=credits;
+
+        cout<<"\nModification successful!"<<endl;
+
+        return;
+    }else if(option=="3"){
+
+        string code;
+
+        while(true) {
+            //Miestras el ID no sea válido se pedirá
+            cout << "\nWrite new code: ";
+            cin >> code;
+            Courses*temp = searchCourse(code);
+            if(temp == NULL) {
+                course->code=code;
+                cout<<"\nModification successful!"<<endl;
+                return;
+            }
+            cout << "\nThis code is not available, please try another" << endl;
+        }
+
+
+    }
+}
 
 void imprime(){
     Students*temp=firstStudent;
@@ -884,6 +944,7 @@ void imprime(){
         temp=temp->next;
 
     }
+
 }
 
 void burnedData(){
@@ -967,13 +1028,15 @@ void burnedData(){
 
     //------Modificar estudiante------
 
-    ModifyStudent(5);
+    //ModifyStudent(5);
 
     //------Borrar estudiante------
-    deleteStudent(1);
+    //deleteStudent(1);
 
+    //------Modificar curso------
 
-    imprime();
+    ModifyCourse("CA1298");
+
 
 }
 
