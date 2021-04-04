@@ -33,6 +33,7 @@ struct LinkTeacher;
 struct LinkStudent;
 struct Meeting;
 struct SublistAssistance;
+bool searchDate(Meeting*meet);
 
 //------ end prototype section -----
 
@@ -470,7 +471,7 @@ bool relateStudentCourse(int idStudent, string codeCourse, int group){
 
     }
     if(courseFoud==false){
-        cout<<"\nThe course cannot be added because no teacher is teaching it"<<endl;
+        cout<<"\nThe course "<<course->name<<" group"<<group<<" cannot be added because no teacher is teaching it"<<endl;
         return false;
     }
 
@@ -502,25 +503,7 @@ bool relateStudentCourse(int idStudent, string codeCourse, int group){
         return true;
     }
 }
-
-bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, int minute, int hourE, int minuteE,int day, int month, int year, string titleMeeting){
-
-    if(hourE< hour){
-        cout<<"\nThe end time must be greater than the start time"<<endl;
-        return false;
-    }else if(hourE== hour && minuteE < minute){
-        cout<<"\nThe end time must be greater than the start time"<<endl;
-        return false;
-    }
-
-    Teachers*teacher=searchTeacher(idTeacher);//si retorna  NULL el teacher no existe, sino ya existe
-
-    if(teacher == NULL){//esta el teacher
-        cout<<"Teacher not found"<<endl;
-
-        return false;
-    }
-
+bool searchiDMeeting(int idMeeting){
     Teachers*tempTeacher= firstTeacher;
 
     while(tempTeacher != NULL){
@@ -558,6 +541,32 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
             tempLink=tempLink->next;
         }
         tempTeacher=tempTeacher->next;
+    }
+    return true;
+}
+
+bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, int minute, int hourE, int minuteE,int day, int month, int year, string titleMeeting){
+
+    if(hourE< hour){
+        cout<<"\nThe end time must be greater than the start time"<<endl;
+        return false;
+    }else if(hourE== hour && minuteE < minute){
+        cout<<"\nThe end time must be greater than the start time"<<endl;
+        return false;
+    }
+
+    Teachers*teacher=searchTeacher(idTeacher);//si retorna  NULL el teacher no existe, sino ya existe
+
+    if(teacher == NULL){//esta el teacher
+        cout<<"Teacher not found"<<endl;
+
+        return false;
+    }
+
+    bool idFound=searchiDMeeting(idMeeting);
+
+    if(idFound==false){
+        return false;
     }
 
     LinkTeacher*temp= teacher->link;
@@ -611,12 +620,6 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
 }
 
 
-int anio=2021;
-int mes=04;
-int dia=04;
-int hora=17;
-int minuto=00;
-
 bool meetingStudent(int idStudent, string codeCourse, int courseGroup, int idMeeting){
     Students*student=searchStudent(idStudent);
     if(student==NULL){
@@ -648,27 +651,12 @@ bool meetingStudent(int idStudent, string codeCourse, int courseGroup, int idMee
                             /*
                              * si el id de la reuion es igual al pasado por parametro sí se asistió
                              */
-                            if(temp4->year > anio) {
-                                cout << "1Attendance cannot be added because the meeting has not passed yet" << endl;
-                                return false;
-                            }
-                            if(temp4->month > mes) {
-                                cout << "2Attendance cannot be added because the meeting has not passed yet" << endl;
-                                return false;
-                            }
-                            if(temp4->month == mes && temp4->day > dia) {
-                                cout << "3Attendance cannot be added because the meeting has not passed yet" << endl;
-                                return false;
-                            }
-                            if(temp4->day == dia && temp4->hour > hora) {
-                                cout << "4Attendance cannot be added because the meeting has not passed yet" << endl;
-                                return false;
-                            }
-                            if(temp4->hour == hora && temp4->minute > minuto) {
+                            bool verifyDate= searchDate(temp4);
+
+                            if(verifyDate==true) {
                                 cout << "5Attendance cannot be added because the meeting has not passed yet" << endl;
                                 return false;
                             }
-
                             SublistAssistance* nn=new SublistAssistance(idMeeting);
                             if(student->link->sublistAssistance==NULL){
                                 student->link->sublistAssistance=nn;
@@ -758,26 +746,64 @@ void modifyTeacher(int id){
 
     }
 }
+void deleteLinkCourseStudent(string code, int group=0){
+    Students*temp=firstStudent;
+
+    while(temp != NULL){
+
+        LinkStudent*tempLink=temp->link;
+
+        if(tempLink==NULL){
+            temp = temp->next;
+            continue;
+        }else if((tempLink->course->code == code && tempLink->group == group) || (tempLink->course->code == code && group==0)){
+            temp->link=temp->link->next;
+        }else {
+            tempLink = tempLink->next;
+            LinkStudent *temp2 = temp->link;
+
+            while (tempLink != NULL) {
+                if ((tempLink->course->code == code && tempLink->group == group)||(tempLink->course->code == code && group==0)){
+                    temp2->next=tempLink->next;
+                    break;
+                }
+                temp2=temp2->next;
+                tempLink=tempLink->next;
+            }
+        }
+        temp = temp->next;
+    }
+
+}
 bool deleteTeacher(int id){
     Teachers*teacher= searchTeacher(id);
     if(teacher==NULL) {
         cout << "Teacher not found" << endl;
         return false;
     }
-    if(firstTeacher==teacher){
+    LinkTeacher*courses=teacher->link;
+    while(courses != NULL){
+        //Ciclo que llama a funcion para borrar curso de estudiantes que imparte  el profesor a borrar
+        deleteLinkCourseStudent(courses->course->code, courses->group);
+        courses=courses->next;
+    }
+    if(teacher->next==NULL && teacher->previous==NULL){
+        firstTeacher=NULL;
+        cout<<"\nDelete successful!"<<endl;
+        return true;
+    }else if(firstTeacher==teacher){
         //Si el que se debe borrar es el primero de lista, solo se hace que el siguiente en previos apunte a NULL
         // y se redefine el firstTeacher como el segundo de la lista :)
         Teachers*temp=firstTeacher->next;
         temp->previous=NULL;
         firstTeacher=temp;
-        cout<<"\nDelete successful! first"<<endl;
+        cout<<"\nDelete successful!"<<endl;
         return true;
     } else if(teacher->next==nullptr){//Con el NULL no sirve, CLion me lo autocorrigió puso nullptr y sirvió
-        cout<<"\nend";
         //Si el que se debe borrar es el último de lista, solo se hace que el que está de penultimo apunte a NULL
         Teachers*temp2=teacher->previous;
         temp2->next=NULL;
-        cout<<"\nDelete successful! first last"<<endl;
+        cout<<"\nDelete successful! central"<<endl;
         return true;
     }else{
         //Si el que se debe borrar tiene anterior y siguiente diferentes de NULL, solo se hace que el anterior
@@ -787,7 +813,7 @@ bool deleteTeacher(int id){
         Teachers*temp4=teacher->next;
         temp3->next=temp4;
         temp4->previous=temp3;
-        cout<<"\nDelete successful! first central"<<endl;
+        cout<<"\nDelete successful! first"<<endl;
         return true;
     }
 }
@@ -876,6 +902,7 @@ bool deleteStudent(int id){
     cout<<"\nDelete successful!"<<endl;
     return true;
 }
+
 void modifyCourse(string code){
 
     Courses*course= searchCourse(code);
@@ -935,6 +962,39 @@ void modifyCourse(string code){
     }
 }
 
+void deleteLinkCourseTeacher(string code){
+
+    Teachers*temp=firstTeacher;
+
+    while (temp != NULL){
+
+        LinkTeacher*temp2=temp->link;
+
+        if(temp2==NULL){
+            return;
+        }else if(temp2->course->code == code){
+            temp->link=temp2->next;
+            return;
+        }else{
+            LinkTeacher*temp3=temp->link;
+            temp2=temp2->next;
+
+            while(temp2 != NULL){
+                if(temp2->course->code==code){
+                    temp3->next=temp2->next;
+                    return;
+                }
+                temp2=temp2->next;
+                temp3=temp3->next;
+            }
+        }
+
+
+        temp=temp->next;
+    }
+
+}
+
 bool deleteCourse(string code){
     Courses*course= searchCourse(code);
 
@@ -942,6 +1002,11 @@ bool deleteCourse(string code){
         cout<<"\nCourse not found"<<endl;
         return false;
     }
+
+    deleteLinkCourseTeacher(course->code);
+
+    deleteLinkCourseStudent(course->code);
+
 
     Courses*temp=firstCourse;
 
@@ -958,14 +1023,195 @@ bool deleteCourse(string code){
 }
 
 void imprime(){
-    Courses*temp=firstCourse;
 
-   do{
-        cout<<temp->code<<endl;
+    cout<<"\n-----profes-----\n";
+    Teachers*temp=firstTeacher;
+
+    while(temp != NULL){
+        cout<<"\n"<<temp->fullName<<endl;
+        LinkTeacher*temp2=temp->link;
+        while(temp2 != NULL){
+            cout<<temp2->course->name<<endl;
+            temp2=temp2->next;
+        }
         temp=temp->next;
 
-    } while(temp != firstCourse);
+    }
+    cout<<"\n-----estudiantes-----\n";
 
+    Students*temp3=firstStudent;
+
+    while(temp3 != NULL){
+        cout<<"\n"<<temp3->fullName<<endl;
+        LinkStudent*temp4= temp3->link;
+        while(temp4 != NULL){
+            cout<<temp4->course->name<<endl;
+            temp4=temp4->next;
+        }
+        temp3=temp3->next;
+
+    }
+
+    cout<<"\n-----cursos-----\n";
+
+    Courses*course=firstCourse;
+
+    do{
+        cout<<course->name<<"---"<<course->code<<endl;
+        course=course->next;
+    }while(course != firstCourse);
+
+}
+
+bool searchDate(Meeting*meet){
+    int anio=2021;
+    int mes=04;
+    int dia=04;
+    int hora=17;
+    int minuto=00;
+    if(meet->year > anio)
+        return true;
+    if(anio==meet->year && meet->month > mes)
+        return true;
+    if(mes==meet->month && meet->day> dia)
+        return true;
+    if(dia==meet->day && meet->hour> hora)
+        return true;
+    if(hora==meet->hour && meet->minute > minuto)
+        return true;
+    return false;
+
+}
+
+void modifyMeetingOfTeacher(int id, string code, int group){
+
+    Teachers*teacher=searchTeacher(id);
+
+    if(teacher== NULL){
+        cout<<"Teacher not found"<<endl;
+        return;
+    }
+
+    LinkTeacher*linkTeacher=teacher->link;
+
+    if(linkTeacher == NULL){
+        cout<<"\nThis teacher has not asignnated courses"<<endl;
+        return;
+    } else{
+        while(linkTeacher != NULL){
+            if(linkTeacher->course->code==code && linkTeacher->group==group){
+                break;
+            }
+            linkTeacher=linkTeacher->next;
+        }
+        if(linkTeacher==NULL){
+            cout<<"\nThis teacher has no asignnated that course"<<endl;
+            return;
+        }else{
+            Meeting*meet=linkTeacher->firstMeeting;
+            if(meet==NULL){
+                cout<<"\nThis teacher has no meetings programmed for this course"<<endl;
+                return;
+            }
+            cout<<"\nThis are the meetings programmed for this course"<<endl;
+            bool flag=false;
+            while(meet != NULL){
+                bool printMeeting=searchDate(meet);
+                if(printMeeting==true) {
+                    flag=true;
+                    cout << "\nID: " << meet->id << "\nTitle: " << meet->meetingTitle << "\nStart date: " << meet->day
+                    << "/" <<meet->month << "/" << meet->year << "\nStart hour: " << meet->hour << ":" << meet->minute <<
+                    "\nFinish hour: " << meet->hourEnd << ":" << meet->minuteEnd << endl;
+                }
+                meet=meet->next;
+            }
+            if(flag==false){
+                cout<<"This teacher has no future meetings for this course"<<endl;
+                return;
+            }
+            int option;
+            cout<<"\nEnter the ID of the meeting to modify: ";
+
+            cin>>option;
+            Meeting*meet2=linkTeacher->firstMeeting;
+            while(meet->id != option){
+                meet2=meet2->next;
+            }
+            cout<<"\nWhat do you want to modify?\n1- ID\n2- Title\n3- Date\n\nSelect an option: ";
+
+            string option2;
+            cin>>option2;
+
+            if(option2=="1"){
+                while(true) {
+                    cout << "\nWrite the new ID: ";
+                    cin>>option;
+
+                    if(searchiDMeeting(option)==false){
+                        cout<<"\nThis ID is not available, try another"<<endl;
+                    }else{
+                        meet2->id=option;
+                        cout<<"\nSuccessful modification"<<endl;
+                        return;
+                    }
+                }
+            }else if(option2=="2"){
+                string newTitle;
+                cout<<"\nWrite the new title: ";
+                cin>>newTitle;
+
+                meet2->meetingTitle=newTitle;
+
+                cout<<"\nSuccessful modification"<<endl;
+                return;
+            }else if(option2=="3"){
+
+                while(true) {
+                    int hour = 0;
+                    char c;
+                    int minutes = 0;
+                    char d;
+                    int day = 0;
+                    int mounth = 0;
+                    int year = 0;
+                    char a;
+                    char b;
+
+                    cout << "\nWrite de new date (for examanple: 15:20/29/03/2021: ";
+
+                    cin >> hour >> c >> minutes >> d >> day >> a >> mounth >> b >> year;
+
+                    if (hour >= 0 && hour <= 23 && c == ':' && minutes >= 0 && minutes <= 59 && d == '/' && day > 0 &&
+                        day < 32 &&
+                        a == '/' && mounth > 0 && mounth < 13 && b == '/' && year > 2020 && year < 2022) {
+
+                        int hourE;
+                        int minuteE;
+
+                        cout << "\nWrite de new final hour meeting (for examanple: 15:20: ";
+
+                        cin >> hourE >> c >> minuteE;
+
+                        if (hourE < hour) {
+                            cout << "\nThe end time must be greater than the start time" << endl;
+                            continue;
+                        } else if (hourE == hour && minuteE < minutes) {
+                            cout << "\nThe end time must be greater than the start time" << endl;
+                            continue;
+                        }
+                        meet2->hour=hour, meet2->year=year, meet2->minute=minutes, meet2->day=day;
+                        meet2->month=mounth, meet2->minuteEnd=minuteE, meet2->hourEnd=hourE;
+
+                        cout<<"\nSuccessful modification"<<endl;
+                        return;
+
+                    } else {
+                        cout << "Incorrect format: HHHH/DD/MM/AAAA";
+                    }
+                }
+            }
+        }
+    }
 }
 
 void burnedData(){
@@ -980,7 +1226,7 @@ void burnedData(){
 
     //agregar estudiantes
 
-    addStudent("Ovidio Martinez", 5, "Male");
+    addStudent("Alonzo Martinez", 5, "Male");
     addStudent("Estefania Perez", 2, "Female");
     addStudent("Luz Mora", 3, "Female");
     addStudent("Bryam Lopez", 1, "Male");
@@ -988,7 +1234,7 @@ void burnedData(){
 
     //agregar cursos
 
-    addCourse("Estructuta de Datos", "CA1101", 3);
+    addCourse("Estructura de Datos", "CA1101", 3);
     addCourse("Programacion Orientada a Objetos", "CA1298", 3);
     addCourse("Calculo Diferencial e Integral", "MA1226", 4);
     addCourse("Matematicas Discretas", "MA7878", 4);
@@ -1015,6 +1261,8 @@ void burnedData(){
     //Relacionar estudiante con curso
 
     relateStudentCourse(5, "MA1226", 51);
+    relateStudentCourse(5, "CA1101", 51);
+    relateStudentCourse(2, "CA1101", 51);
     relateStudentCourse(2, "MA7878", 53);
     relateStudentCourse(3, "CA1558", 50);
     relateStudentCourse(4, "CA1101", 51);
@@ -1023,7 +1271,7 @@ void burnedData(){
 
     //Asignar reuinión a un profesor
 
-    meetingTeacher(5, "MA1226",1,  13, 10, 16, 55,29, 03, 2021,  "clase magistral");
+    meetingTeacher(5, "MA1226",1,  13, 10, 16, 55,29, 05, 2021,  "clase magistral");
     meetingTeacher(5, "MA1226",2,  16, 55, 18, 30,29, 03, 2021,  "clase magistral");
     meetingTeacher(5, "MA1226",7,  15, 10, 19, 30,02, 04, 2021,  "clase magistral");
     meetingTeacher(4, "CA1298",3,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
@@ -1034,7 +1282,7 @@ void burnedData(){
 
     //Estudiantes indican reunion en la que participaron
 
-    meetingStudent(5, "MA1226", 51, 1);
+    //meetingStudent(5, "MA1226", 51, 1);
     meetingStudent(5, "MA1226", 51, 2);
 
 
@@ -1046,7 +1294,6 @@ void burnedData(){
     //------Delete teacher------
 
     //deleteTeacher(1);
-    //deleteTeacher(3);
 
 
     //------Modificar estudiante------
@@ -1068,11 +1315,12 @@ void burnedData(){
     //------Borrar curso------
 
     //deleteCourse("CA1101");
+    //imprime();
 
 
-    //Modificar Pofesor con curso
+    //Modificar reunión de profesor
 
-
+    modifyMeetingOfTeacher(5, "MA1226", 51);
 
 }
 
