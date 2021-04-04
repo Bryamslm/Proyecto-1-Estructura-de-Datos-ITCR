@@ -1134,7 +1134,7 @@ void modifyMeetingOfTeacher(int id, string code, int group){
 
             cin>>option;
             Meeting*meet2=linkTeacher->firstMeeting;
-            while(meet->id != option){
+            while(meet2->id != option){
                 meet2=meet2->next;
             }
             cout<<"\nWhat do you want to modify?\n1- ID\n2- Title\n3- Date\n\nSelect an option: ";
@@ -1177,7 +1177,7 @@ void modifyMeetingOfTeacher(int id, string code, int group){
                     char a;
                     char b;
 
-                    cout << "\nWrite de new date (for examanple: 15:20/29/03/2021: ";
+                    cout << "\nWrite de new date (for examanple: 15:20/29/03/2021): ";
 
                     cin >> hour >> c >> minutes >> d >> day >> a >> mounth >> b >> year;
 
