@@ -1434,8 +1434,8 @@ void burnedData(){
 
     //Modificar reunión de profesor
 
-    deleteMeetingOfTeacher(5,"MA1226", 51);
-    modifyMeetingOfTeacher(5, "MA1226", 51);
+   //deleteMeetingOfTeacher(5,"MA1226", 51);
+    //modifyMeetingOfTeacher(5, "MA1226", 51);
 
 }
 
@@ -1443,7 +1443,7 @@ void burnedData(){
 //-----------------------
 //ARRIBA DEL MÉTODO MEETINGSTUDENT ESTAN VARIABLES SIMULANDO UNA FECHA, PARA NO ESTAR INGRESANDO POR CONSOLA TANTO
 //-------------------------
-/*
+
 void menu(){
 
 
@@ -1463,21 +1463,83 @@ void menu(){
         if (hora >= 0 && hora <= 23 && c == ':' && minutos >= 0 && minutos <= 59 && d == '/' && dia > 0 && dia < 32 &&
             a == '/' && mes > 0 && mes < 13 && b == '/' && anio > 2020 && anio < 2022) {
 
-            cout << "\nLa fecha es correcta" << endl;
+            cout << "\nThe date is correct" << endl;
             break;
 
         }else{
-            cout << "Incorrecto el formato: HHHH/DD/MM/AAAA";
+            cout << "Wrong Format: HHHH/DD/MM/AAAA";
         }
     }
+    cout<<"--------Option Menu--------"<<endl;
+    cout<<"Type -1- for teachers"<<endl;
+    int num;
+    cout<<"\nType the number of the option you want to execute on your keyboard"<<endl;
+    cin>>num;
+
+    if(num ==1){
+        int IDTeacher;
+        cout<<"Type your ID Teacher"<<endl;
+        cin>>IDTeacher;
+        Teachers*teacher=searchTeacher(IDTeacher);
+        if(teacher != NULL){
+            cout<<"-------WELCOME TO THE TEACHER PLATFORM--------"<<endl;
+            cout<<"Type -1- for insert a meeting to a course"<<endl;
+            cout<<"Type -2- for modify a course meeting"<<endl;
+            cout<<"Type -3- for delete a course meeting"<<endl;
+            int OptionTeacher;
+            cout<<"\n Type the option";
+            cin>>OptionTeacher;
+            string codeCourse;
+            int idMeeting;
+            if( OptionTeacher ==1) {
+                int hour;
+                int minute;
+                int hourE;
+                int minuteE;
+                int day;
+                int month;
+                int year;
+                string titleMeeting;
+                cout<<"Enter the code of the Course class to be scheduled"<<endl;
+                cin>>codeCourse;
+                cout<<"Enter the Meeting ID of the class to be scheduled"<<endl;
+                cin>>idMeeting;
+                cout<<"Enter the start time of the class to be scheduled"<<endl;
+                cin>>hour;
+                cout<<"Enter the start minute of the class to be scheduled"<<endl;
+                cin>>minute;
+                cout<<"Enter the Finish time of the class to be scheduled"<<endl;
+                cin>>hourE;
+                cout<<"Enter the Finish minute of the class to be scheduled"<<endl;
+                cin>>minuteE;
+                cout<<"Enter the day of the class to be scheduled, for example: 15"<<endl;
+                cin>>day;
+                cout<<"Enter the month of the class to be scheduled, for example: 04"<<endl;
+                cin>>month;
+                cout<<"Enter the year of the class to be scheduled, for example: 2021"<<endl;
+                cin>>year;
+                cout<<"Enter a name for the meeting to be scheduled"<<endl;
+                cin>>titleMeeting;
+            }
+
+
+
+
+
+
+        }
+        cout<<"Your teacher ID  is not registered on the platform"<<endl;
+        return;
+    }
+
 }
-*/
+
 
 int main() {
 
     burnedData();
 
-    //menu();
+    menu();
 
     /*
     updateTeachersList();

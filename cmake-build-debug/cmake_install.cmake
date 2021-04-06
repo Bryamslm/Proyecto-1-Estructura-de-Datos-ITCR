@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/bryam/Desktop/TEC/Tercer _Semestre/Estructuras/gestion-de-reuniones
+# Install script for directory: C:/Users/Usuario7/Documents/estructura de datos/Poryecto l/gestion-de-reuniones
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/bryam/Desktop/TEC/Tercer _Semestre/Estructuras/gestion-de-reuniones/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/Usuario7/Documents/estructura de datos/Poryecto l/gestion-de-reuniones/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
