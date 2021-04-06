@@ -1083,6 +1083,78 @@ bool searchDate(Meeting*meet){
 
 }
 
+void deleteMeetingOfTeacher(int idTeacher,string codeCourse, int groupCourse){
+
+    Teachers*teacher=searchTeacher(idTeacher);
+
+    if(teacher== NULL){
+        cout<<"Teacher not found"<<endl;
+        return;
+    }
+    LinkTeacher*linkTeacher=teacher->link;
+
+    if(linkTeacher == NULL){
+        cout<<"\nThis teacher has not asignnated courses"<<endl;
+        return;
+    }else {
+        while (linkTeacher != NULL) {
+            if (linkTeacher->course->code == codeCourse && linkTeacher->group == groupCourse) {
+                break;
+            }
+            linkTeacher = linkTeacher->next;
+        }
+        if (linkTeacher == NULL) {
+            cout << "\nThis teacher has no asignnated that course" << endl;
+            return;
+        } else {
+            Meeting *meet = linkTeacher->firstMeeting;
+            if (meet == NULL) {
+                cout << "\nThis teacher has no meetings programmed for this course" << endl;
+                return;
+            }
+            cout << "\nThis are the meetings programmed for this course" << endl;
+            bool flag = false;
+            while (meet != NULL) {
+                bool printMeeting = searchDate(meet);
+                if (printMeeting == true) {
+                    flag = true;
+                    cout << "\nID: " << meet->id << "\nTitle: " << meet->meetingTitle << "\nStart date: " << meet->day
+                         << "/" << meet->month << "/" << meet->year << "\nStart hour: " << meet->hour << ":"
+                         << meet->minute <<
+                         "\nFinish hour: " << meet->hourEnd << ":" << meet->minuteEnd << endl;
+                }
+                meet = meet->next;
+            }
+            if (flag == false) {
+                cout << "This teacher has no future meetings for this course" << endl;
+                return;
+            }
+            int option;
+            cout << "\nEnter the ID of the meeting to delete: ";
+
+            cin >> option;
+
+            Meeting*meet2=linkTeacher->firstMeeting;
+
+            if(meet2->id==option){
+                linkTeacher->firstMeeting=meet2->next;
+                cout<<"\nMeeting deleted successfully"<<endl;
+                return;
+            }
+            Meeting*meet3;
+            while(meet2->id != option){
+                meet3=meet2;
+                meet2=meet2->next;
+            }
+            meet3->next=meet2->next;
+
+            cout<<"\nMeeting deleted successfully"<<endl;
+
+            return;
+        }
+    }
+}
+
 void modifyMeetingOfTeacher(int id, string code, int group){
 
     Teachers*teacher=searchTeacher(id);
@@ -1167,6 +1239,8 @@ void modifyMeetingOfTeacher(int id, string code, int group){
             }else if(option2=="3"){
 
                 while(true) {
+
+                    bool invalide=true;
                     int hour = 0;
                     char c;
                     int minutes = 0;
@@ -1191,6 +1265,46 @@ void modifyMeetingOfTeacher(int id, string code, int group){
                         cout << "\nWrite de new final hour meeting (for examanple: 15:20: ";
 
                         cin >> hourE >> c >> minuteE;
+
+                        LinkTeacher*temp=teacher->link;
+
+                        while(temp != NULL) {
+
+                            Meeting*temp2=temp->firstMeeting;
+
+                            while (temp2 != NULL) {
+                                /*
+                                 * Este ciclo a parte de recorrer los enlaces de cursos verifica que el profesor no tenga otra
+                                 * reunión a la misma hora, el mismo día, mes y año
+                                 */
+
+                                //comprueba que no se programe una reunionen el mismo tiempo que otra
+                                if (temp2->year == year && temp2->month == mounth && temp2->day == day &&
+                                    temp2->hour == hour && temp2->minute == minutes) {
+                                    cout<< "\nThe meeting cannot be assigned because this teacher already has a meeting at the same"<<
+                                    " time, day, month and year" << endl;
+                                    invalide=false;
+                                    break;
+                                }
+                                //comprueba que no se programe una reunion cuando otra estará en curso
+                                if (temp2->year == year && temp2->month == mounth && temp2->day == day &&
+                                    temp2->hourEnd >= hour && temp2->minuteEnd > minuteE) {
+                                    cout<< "\nYou cannot schedule the meeting because you will be in another meeting at that time"<< endl;
+                                    invalide=false;
+                                    break;
+                                }
+                                temp2 = temp2->next;
+                            }
+
+                            if(invalide== false) {
+                                break;
+                            }
+
+                            temp=temp->next;
+                        }
+                        if(invalide== false) {
+                            continue;
+                        }
 
                         if (hourE < hour) {
                             cout << "\nThe end time must be greater than the start time" << endl;
@@ -1272,7 +1386,7 @@ void burnedData(){
     //Asignar reuinión a un profesor
 
     meetingTeacher(5, "MA1226",1,  13, 10, 16, 55,29, 05, 2021,  "clase magistral");
-    meetingTeacher(5, "MA1226",2,  16, 55, 18, 30,29, 03, 2021,  "clase magistral");
+    meetingTeacher(5, "MA1226",2,  16, 55, 18, 30,29, 05, 2021,  "clase magistral");
     meetingTeacher(5, "MA1226",7,  15, 10, 19, 30,02, 04, 2021,  "clase magistral");
     meetingTeacher(4, "CA1298",3,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
     meetingTeacher(3, "CA1103",4,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
@@ -1320,6 +1434,7 @@ void burnedData(){
 
     //Modificar reunión de profesor
 
+    deleteMeetingOfTeacher(5,"MA1226", 51);
     modifyMeetingOfTeacher(5, "MA1226", 51);
 
 }
