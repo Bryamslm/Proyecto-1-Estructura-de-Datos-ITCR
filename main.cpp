@@ -1475,6 +1475,7 @@ void menu(){
         cout << "Type -1- for teachers" << endl;
         cout << "Type -2- for Students" << endl;
         cout << "Type -3- for Administrators" << endl;
+        cout << "Type -4- for EXIT" << endl;
         int num;
         cout << "\nType the number of the option you want to execute on your keyboard" << endl;
         cin >> num;
@@ -1588,15 +1589,154 @@ void menu(){
                     cout << "Type -1- To perform actions on teachers" << endl;
                     cout << "Type -2- To perform actions on students" << endl;
                     cout << "Type -3- To perform actions on courses" << endl;
+                    cout << "Type -4- To perform actions on teachers with courses" << endl;
+                    cout << "Type -5- To perform actions on students with courses" << endl;
                     int Option;
+                    cout << "\nType the number of the option you want to execute on your keyboard" << endl;
+                    cin >> Option;
+                    char Options;
+                    string fullname;
+                    int Id;
+                    string gender;
                     if(Option == 1){
-
+                        cout << "Type -a- To Insert teachers" << endl;
+                        cout << "Type -b- To Delete teachers" << endl;
+                        cout << "Type -c- To Modify teachers" << endl;
+                        cout << "Type the letter of the option"<<endl;
+                        cin>>Options;
+                        if(Options == 'a'){
+                            cout<<"Insert the full name of the teacher"<<endl;
+                            cin>>fullname;
+                            cout<<"Insert the teacher ID"<<endl;
+                            cin>>Id;
+                            cout<<"Insert the gender of the teacher"<<endl;
+                            cin>>gender;
+                            bool result = addTeacher(fullname, Id, gender);
+                            if(result == true){
+                                cout<<"The teacher was added successfully"<<endl;
+                            }
+                            else
+                                cout<<"The teacher was not added correctly"<<endl;
+                        }
+                        if(Options == 'b'){
+                            cout<<"Insert the teacher ID"<<endl;
+                            cin>>Id;
+                            bool result = deleteTeacher(Id);
+                            if(result == true){
+                                cout<<"The teacher was deleted successfully"<<endl;
+                            }
+                            else
+                                cout<<"The teacher was not removed correctly"<<endl;
+                        }
+                        if(Options == 'c'){
+                            cout<<"Insert the teacher ID"<<endl;
+                            cin>>Id;
+                            modifyTeacher(Id);
+                        }
+                        else{
+                            cout<<"ERROR!!, The typed option does not exist"<<endl;
+                            return;
+                        }
                     }
                     if(Option == 2){
+                        cout << "Type -a- To Insert students" << endl;
+                        cout << "Type -b- To Delete students" << endl;
+                        cout << "Type -c- To Modify students" << endl;
+                        cout << "Type the letter of the option"<<endl;
+                        cin>>Options;
+                        if(Options == 'a'){
+                            cout<<"Insert the full name of the student"<<endl;
+                            cin>>fullname;
+                            cout<<"Insert the student ID"<<endl;
+                            cin>>Id;
+                            cout<<"Insert the gender of the student"<<endl;
+                            cin>>gender;
+                            bool result = addStudent(fullname, Id, gender);
+                            if(result == true){
+                                cout<<"The student was added successfully"<<endl;
+                            }
+                            else
+                                cout<<"The student was not added correctly"<<endl;
+                        }
+                        if(Options == 'b'){
+                            cout<<"Insert the Student ID"<<endl;
+                            cin>>Id;
+                            bool result = deleteStudent(Id);
+                            if(result == true){
+                                cout<<"The student was deleted successfully"<<endl;
+                            }
+                            else
+                                cout<<"The student was not removed correctly"<<endl;
 
+                        }
+                        if(Options == 'c'){
+                            cout<<"Insert the student ID"<<endl;
+                            cin>>Id;
+                            modifyStudent(Id);
+                        }
+                        else{
+                            cout<<"ERROR!!, The typed option does not exist"<<endl;
+                            return;
+                        }
                     }
                     if(Option == 3){
+                        cout << "Type -a- To Insert courses" << endl;
+                        cout << "Type -b- To Delete courses" << endl;
+                        cout << "Type -c- To Modify courses" << endl;
+                        cout << "Type the letter of the option"<<endl;
+                        cin>>Options;
+                        string code;
+                        if(Options == 'a'){
+                            string name;
+                            int credits;
+                            cout<<"Insert the name of the course"<<endl;
+                            cin>>name;
+                            cout<<"Insert the code of the course"<<endl;
+                            cin>>code;
+                            cout<<"Insert the credits of the course"<<endl;
+                            cin>>credits;
+                            bool result = addCourse(name, code, credits);
+                            if(result == true){
+                                cout<<"The course was added successfully"<<endl;
+                            }
+                            else
+                                cout<<"The course was not added correctly"<<endl;
+                        }
+                        if(Options == 'b'){
+                            cout<<"Insert the code of the course"<<endl;
+                            cin>>code;
+                            bool result = deleteCourse(code);
+                            if(result == true){
+                                cout<<"The course was deleted successfully"<<endl;
+                            }
+                            else
+                                cout<<"The course was not removed correctly"<<endl;
 
+
+                        }
+                        if(Options == 'c'){
+                            cout<<"Insert the code of the course"<<endl;
+                            cin>>code;
+                            modifyCourse(code);
+                        }
+                        else{
+                            cout<<"ERROR!!, The typed option does not exist"<<endl;
+                            return;
+                        }
+                    }
+                    if(Option == 4){
+                        cout << "Type -a- To Insert teachers with courses" << endl;
+                        cout << "Type -b- To Delete teachers with courses" << endl;
+                        cout << "Type -c- To Modify teachers with courses" << endl;
+                        cout << "Type the letter of the option"<<endl;
+                        cin>>Options;
+                    }
+                    if(Option == 5){
+                        cout << "Type -a- To Insert students with courses" << endl;
+                        cout << "Type -b- To Delete students with courses" << endl;
+                        cout << "Type -c- To Modify students with courses" << endl;
+                        cout << "Type the letter of the option"<<endl;
+                        cin>>Options;
                     }
                     else {
                         cout << "ERROR!!, The typed option does not exist" << endl;
@@ -1607,6 +1747,10 @@ void menu(){
                 cout << "Your Administrator ID is not registered on the platform" << endl;
                 return;}
 
+        }
+        if (num == 4){
+            cout<<"Gracias por usar nuestra plataforma"<<endl;
+            break;
         }
     }
 
