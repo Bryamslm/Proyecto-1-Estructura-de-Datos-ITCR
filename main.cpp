@@ -35,6 +35,16 @@ struct Meeting;
 struct SublistAssistance;
 bool searchDate(Meeting*meet);
 
+int hora=0;
+char c;
+int minutos=0;
+char d;
+int dia = 0;
+int mes = 0;
+int anio = 0;
+char a;
+char b;
+
 //------ end prototype section -----
 
 
@@ -114,6 +124,8 @@ struct Administrators{
 }*firstAdmin;
 
 struct LinkTeacher{
+    //Esta es una lista de enlace de profesor a un curso, tambíen contiene una sublista de enlaces de reuniones
+    //del tipo Meeting para llevar lista de reuniones que un profesor tiene en el curso al que apunta el enlace
 
     LinkTeacher*next;
     Courses*course;
@@ -129,6 +141,8 @@ struct LinkTeacher{
 
 };
 struct LinkStudent{
+    //Esta es una lista de enlace de estudiante a un curso, tambíen contiene una sublista de enlaces de asistencia del
+    //tipo SubListAssistance para llevar lista de asistencia que un estudiante tiene en el curso al que apunta el enlace
 
     LinkStudent*next;
     Courses*course;
@@ -145,6 +159,9 @@ struct LinkStudent{
 };
 
 struct SublistAssistance{
+    //Sublista de asistencia perteneciente a cada enlace de la lista del tipo LinkStudent, guarda ID de la reunión si un
+    // estudiante participó en una reunión
+
     int id;
     SublistAssistance*next;
 
@@ -155,6 +172,8 @@ struct SublistAssistance{
 };
 
 struct Meeting{
+    //Sublista de asistencia perteneciente a cada enlace de la lista del tipo LinkStudent, guarda ID de la reunión si un
+    // estudiante participó en una reunión
 
     Meeting*next;
     int id;
@@ -184,7 +203,8 @@ struct Meeting{
 
 };
 
-Administrators*searchAdmin(string fullName, int id){//busca admin a ver si ya existe, retorna NULL si no está
+Administrators*searchAdmin(string fullName, int id){
+    //busca admin a ver si ya existe, retorna NULL si no está
 
     Administrators*temp=firstAdmin;
 
@@ -202,9 +222,11 @@ Administrators*searchAdmin(string fullName, int id){//busca admin a ver si ya ex
 
 }
 
-bool addAdmin(string fullName, int id, string gender){//función que agrega administadores a lista simple con inserción al inicio
+bool addAdmin(string fullName, int id, string gender){
+    //función que agrega administadores a lista simple con inserción al inicio
 
-    if(firstAdmin==NULL){//si lista de admins está vacía se agrega nuevo admin
+    if(firstAdmin==NULL){
+        //si lista de admins está vacía se agrega nuevo admin
         Administrators*nn = new Administrators(fullName, id, gender);
         firstAdmin=nn;
         return true;
@@ -212,7 +234,7 @@ bool addAdmin(string fullName, int id, string gender){//función que agrega admi
         Administrators*admin=searchAdmin(fullName, id);//si retorna  NULL el admin no existe, sino ya existe
 
         if(admin != NULL){//est esta el admin
-            cout<<"Administrator could not be added"<<endl;
+            cout<<"Administrator could not be added because it already exists"<<endl;
 
             return false;
         }else{
@@ -240,9 +262,11 @@ Teachers*searchTeacher(int id){//busca teacher a ver si ya existe, retorna NULL 
 
 }
 
-bool addTeacher(string fullName, int id, string gender){//función que agrega aprofesor a lista doble con inserción al inicio
+bool addTeacher(string fullName, int id, string gender){
+    //función que agrega aprofesor a lista doble con inserción al inicio
 
-    if(firstTeacher==NULL){//si lista de profes está vacía se agrega nuevo profe
+    if(firstTeacher==NULL){
+        //si lista de profes está vacía se agrega nuevo profe
         Teachers*nn = new Teachers(fullName, id, gender);
         firstTeacher=nn;
         return true;
@@ -250,14 +274,14 @@ bool addTeacher(string fullName, int id, string gender){//función que agrega ap
         Teachers*teacher=searchTeacher(id);//si retorna  NULL el teacher no existe, sino ya existe
 
         if(teacher != NULL){//esta el teacher
-            cout<<"Teacher could not be added"<<endl;
+            cout<<"Teacher could not be added because it already exists"<<endl;
 
             return false;
         }else{
             Teachers*nn= new Teachers(fullName, id, gender);//crea al admin
 
             nn->next=firstTeacher;
-            firstTeacher->previous=nn;
+            firstTeacher->previous=nn; //inserción al inicio de lista doble
             firstTeacher=nn;
 
             return true;
@@ -300,10 +324,14 @@ bool addStudent(string fullName, int id, string gender){//función que agrega es
             while(temp != NULL){//compara el id del nn con el anterios temp y temp->next
 
                 if(nn->id >=temp->id &&  temp->next == NULL){
+                    //si nn tiene mayor ID que todos los demás se agrega a lista preguntando si id de nn es mayor al
+                    //id de temp y el temp siguiente es NULL osea, nn sería al mayor de id
                     temp->next = nn;
                     return true;
                 }
                 if(nn->id >=temp->id && nn->id <= temp->next->id){
+                    //si id nn es un elemento central osea ni el menor ni el mayor se agrega a su lugar correspondiente
+
                     nn->next = temp->next;
                     temp->next = nn;
                     return true;
@@ -313,6 +341,7 @@ bool addStudent(string fullName, int id, string gender){//función que agrega es
             }
 
             if(nn->id <= firstStudent->id){//si es mayor al primero
+                //si nn es el id menor se agrega de primero y se convierte en el firstStudent
                 nn->next=firstStudent;
                 firstStudent=nn;
                 return true;
@@ -322,7 +351,8 @@ bool addStudent(string fullName, int id, string gender){//función que agrega es
     }
 }
 
-Courses*searchCourse(string code){//busca teacher a ver si ya existe, retorna NULL si no está
+Courses*searchCourse(string code){
+    //busca teacher a ver si ya existe, retorna NULL si no está
 
     Courses*temp=firstCourse;
 
@@ -369,7 +399,7 @@ void updateTeachersList(){//Actializa en firstTeacher en cada admin
     /*
      * Cuando un profesor se agrega al inicio de lista profesores o se agrega por primera vez
      * la lista esta desactualizada por eso existe esta función para actualizar las sublista a
-     * los datos exixtentes actualmente
+     * los datos existentes actualmente
      * Solo se llama en casos específicos y no siempre que se agregue un profesor
      */
     Administrators*temp=firstAdmin;
@@ -600,7 +630,11 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
                         return false;
                     }
                     //comprueba que no se programe una reunion cuando otra estará en curso
-                   if(temp2->year==nn->year && temp2->month == nn->month && temp2->day==nn->day && temp2->hourEnd >= nn->hour && temp2->minuteEnd > nn->minute){
+                   if(temp2->year==nn->year && temp2->month == nn->month && temp2->day==nn->day && temp2->hourEnd > nn->hour){
+                       cout<<"\nYou cannot schedule the meeting because you will be in another meeting at that time"<<endl;
+                       return false;
+                   }
+                   if(temp2->year==nn->year && temp2->month == nn->month && temp2->day==nn->day && temp2->hourEnd == nn->hour && temp2->minuteEnd > nn->minute){
                        cout<<"\nYou cannot schedule the meeting because you will be in another meeting at that time"<<endl;
                        return false;
                    }
@@ -1160,7 +1194,7 @@ void modifyMeetingOfTeacher(int id, string code, int group){
     Teachers*teacher=searchTeacher(id);
 
     if(teacher== NULL){
-        cout<<"Teacher not found"<<endl;
+        cout<<"\nTeacher not found"<<endl;
         return;
     }
 
@@ -1262,7 +1296,7 @@ void modifyMeetingOfTeacher(int id, string code, int group){
                         int hourE;
                         int minuteE;
 
-                        cout << "\nWrite de new final hour meeting (for examanple: 15:20: ";
+                        cout << "\nWrite de new final hour meeting (for examanple: 15:20): ";
 
                         cin >> hourE >> c >> minuteE;
 
@@ -1287,8 +1321,15 @@ void modifyMeetingOfTeacher(int id, string code, int group){
                                     break;
                                 }
                                 //comprueba que no se programe una reunion cuando otra estará en curso
+
                                 if (temp2->year == year && temp2->month == mounth && temp2->day == day &&
-                                    temp2->hourEnd >= hour && temp2->minuteEnd > minuteE) {
+                                    temp2->hourEnd > hour) {
+                                    cout<< "\nYou cannot schedule the meeting because you will be in another meeting at that time"<< endl;
+                                    invalide=false;
+                                    break;
+                                }
+                                if (temp2->year == year && temp2->month == mounth && temp2->day == day &&
+                                    temp2->hourEnd == hour && temp2->minuteEnd > minuteE) {
                                     cout<< "\nYou cannot schedule the meeting because you will be in another meeting at that time"<< endl;
                                     invalide=false;
                                     break;
@@ -1446,146 +1487,144 @@ void burnedData(){
 
 void menu(){
 
-
-    int hora=0;
-    char c;
-    int minutos=0;
-    char d;
-    int dia = 0;
-    int mes = 0;
-    int anio = 0;
-    char a;
-    char b;
-    while(true) {
-        cout<<"Ingrese la hora actual (ejemplo: 15:20/29/03/2021): " ;
-        cin >> hora >> c >> minutos >> d >> dia >> a >> mes >> b >> anio;
-
-        if (hora >= 0 && hora <= 23 && c == ':' && minutos >= 0 && minutos <= 59 && d == '/' && dia > 0 && dia < 32 &&
-            a == '/' && mes > 0 && mes < 13 && b == '/' && anio > 2020 && anio < 2022) {
-
-            cout << "\nThe date is correct" << endl;
-            break;
-
-        }else{
-            cout << "Wrong Format: HHHH/DD/MM/AAAA";
-        }
-    }
     while(true) {
         cout << "--------Option Menu--------" << endl;
-        cout << "Type -1- for teachers" << endl;
-        cout << "Type -2- for Students" << endl;
-        cout << "Type -3- for Administrators" << endl;
-        cout << "Type -4- for EXIT" << endl;
+        cout << "Type 1- for teachers" << endl;
+        cout << "Type 2- for Students" << endl;
+        cout << "Type 3- for Administrators" << endl;
+        cout << "Type 4- for EXIT" << endl;
         int num;
-        cout << "\nType the number of the option you want to execute on your keyboard" << endl;
+        cout << "\nType the number of the option you want to execute on your keyboard: ";
         cin >> num;
         string codeCourse;
         int group;
         int idMeeting;
         if (num == 1) {
-            int IDTeacher;
-            cout << "Type your ID Teacher" << endl;
-            cin >> IDTeacher;
-            Teachers *teacher = searchTeacher(IDTeacher);
+            int idTeacher;
+            cout << "\nType your ID Teacher: ";
+            cin >> idTeacher;
+            Teachers*teacher = searchTeacher(idTeacher);
             if (teacher != NULL) {
-                cout << "-------WELCOME TO THE TEACHER PLATFORM--------" << endl;
-                cout << "Type -1- for insert a meeting to a course" << endl;
-                cout << "Type -2- for modify a course meeting" << endl;
-                cout << "Type -3- for delete a course meeting" << endl;
-                int OptionTeacher;
-                cout << "\n Type the option";
-                cin >> OptionTeacher;
-                if (OptionTeacher == 1) {
-                    int hour;
-                    int minute;
-                    int hourE;
-                    int minuteE;
-                    int day;
-                    int month;
-                    int year;
-                    string titleMeeting;
-                    cout << "Enter the code of the Course class to be scheduled" << endl;
-                    cin >> codeCourse;
-                    cout << "Enter the Meeting ID of the class to be scheduled" << endl;
-                    cin >> idMeeting;
-                    cout << "Enter the start time of the class to be scheduled" << endl;
-                    cin >> hour;
-                    cout << "Enter the start minute of the class to be scheduled" << endl;
-                    cin >> minute;
-                    cout << "Enter the Finish time of the class to be scheduled" << endl;
-                    cin >> hourE;
-                    cout << "Enter the Finish minute of the class to be scheduled" << endl;
-                    cin >> minuteE;
-                    cout << "Enter the day of the class to be scheduled, for example: 15" << endl;
-                    cin >> day;
-                    cout << "Enter the month of the class to be scheduled, for example: 04" << endl;
-                    cin >> month;
-                    cout << "Enter the year of the class to be scheduled, for example: 2021" << endl;
-                    cin >> year;
-                    cout << "Enter a name for the meeting to be scheduled" << endl;
-                    cin >> titleMeeting;
-                    bool meeting = meetingTeacher(IDTeacher, codeCourse, idMeeting, hour, minute, hourE, minuteE, day,
-                                                  month, year, titleMeeting);
-                    if (meeting == true)
-                        cout << "The meeting was inserted successfully." << endl;
-                    else
-                        cout << "ERROR!! The meeting was not inserted." << endl;
-                } else if (OptionTeacher == 2) {
-                    cout << "Enter the course code" << endl;
-                    cin >> codeCourse;
-                    cout << "Enter the group number" << endl;
-                    cin >> group;
-                    modifyMeetingOfTeacher(IDTeacher, codeCourse, group);
+
+                while(true) {
+                    cout << "\n-------WELCOME TO THE TEACHER PLATFORM--------" << endl;
+                    cout << "Type 1- for insert a meeting to a course" << endl;
+                    cout << "Type 2- for modify a course meeting" << endl;
+                    cout << "Type 3- for delete a course meeting" << endl;
+                    cout << "Type 4- Back to Main Menu" << endl;
+                    string optionTeacher;
+                    cout << "\nType the option: ";
+                    cin >> optionTeacher;
+                    if (optionTeacher == "1") {
+                        int hour;
+                        int minute;
+                        int hourE;
+                        int minuteE;
+                        int day;
+                        int month;
+                        int year;
+                        string titleMeeting;
+                        cout << "\nEnter the code of the Course class to be scheduled: ";
+                        cin >> codeCourse;
+                        cout << "\nEnter the Meeting ID of the class to be scheduled: ";
+                        cin >> idMeeting;
+
+                        while (true) {
+                            cin.ignore();
+                            cout << "\nEnter the date Meeting of the class to be scheduled (example 18:10/11/05/2021): ";
+                            cin >> hour >> c >> minute >> d >> day >> a >> month >> b >> year;
+                            if (hour >= 0 && hour <= 23 && c == ':' && minute >= 0 && minute <= 59 && d == '/' &&
+                                day > 0 && day < 32 && a == '/' && month > 0 && month < 13 && b == '/' &&
+                                year > 2020 && year < 2022) {
+
+                                cout << "\nEnter the date Meeting of the class to be scheduled (example 18:10): ";
+
+                                cin >> hourE >> c >> minuteE;
+                                if (hourE >= 0 && hourE <= 23 && c == ':' && minuteE >= 0 && minuteE <= 59) {
+                                    break;
+                                }
 
 
-                } else if (OptionTeacher == 3) {
-                    cout << "Enter the course code" << endl;
-                    cin >> codeCourse;
-                    cout << "Enter the group number" << endl;
-                    cin >> group;
-                    deleteMeetingOfTeacher(IDTeacher, codeCourse, group);
-                } else
-                    cout << "ERROR!!, The typed option does not exist" << endl;
+                            } else {
+                                cout << "\nWrong Format: HHHH/DD/MM/AAAA";
+                            }
+                        }
 
+                        cout << "\nEnter a name for the meeting to be scheduled: ";
+                        cin.ignore();
+                        getline(cin, titleMeeting);
+
+                        bool meeting = meetingTeacher(idTeacher, codeCourse, idMeeting, hour, minute, hourE, minuteE, day, month, year, titleMeeting);
+                        if (meeting == true)
+                            cout << "\nThe meeting was inserted successfully." << endl;
+                        else
+                            cout << "\nERROR!! The meeting was not inserted." << endl;
+
+                    } else if (optionTeacher == "2") {
+                        cout << "\nEnter the course code: ";
+                        cin >> codeCourse;
+                        cout << "\nEnter the group number: ";
+                        cin >> group;
+                        modifyMeetingOfTeacher(idTeacher, codeCourse, group);
+
+
+                    } else if (optionTeacher == "3") {
+                        cout << "\nEnter the course code: ";
+                        cin >> codeCourse;
+                        cout << "\nEnter the group number: ";
+                        cin >> group;
+                        deleteMeetingOfTeacher(idTeacher, codeCourse, group);
+                    } else if (optionTeacher == "4") {
+                        menu();
+                    } else
+                        cout << "ERROR!!, The typed option does not exist" << endl;
+
+                }
             } else
-                cout << "Your teacher ID  is not registered on the platform" << endl;
-            return;
+                cout<<"Your teacher ID  is not registered on the platform" << endl;
         }
         if (num == 2) {
             int IDStudent;
-            cout << "Type your ID Student" << endl;
+            cout << "\nType your ID Studen: ";
             cin >> IDStudent;
             Students *student = searchStudent(IDStudent);//si retorna  NULL el estudiante no existe, sino ya existe
             if (student != NULL) {
-                cout << "-------WELCOME TO THE STUDENT PLATFORM--------" << endl;
-                cout << "Type -1- Course meeting attendance record" << endl;
-                int OptionStudent;
-                cout << "\n Type the option";
-                cin >> OptionStudent;
-                if (OptionStudent == 1) {
-                    cout << "Enter the Course code" << endl;
-                    cin >> codeCourse;
-                    cout << "Enter the group number" << endl;
-                    cin >> group;
-                    cout << "Enter the Meeting ID of the course" << endl;
-                    cin >> idMeeting;
-                    meetingStudent(IDStudent, codeCourse, group, idMeeting);
-                } else
-                    cout << "ERROR!!, The typed option does not exist" << endl;
+                while(true) {
+                    cout << "\n-------WELCOME TO THE STUDENT PLATFORM--------" << endl;
+                    cout << "Type 1- Course meeting attendance record" << endl;
+                    cout << "Type 2- Back to Main Menu" << endl;
+                    int OptionStudent;
+                    cout << "\n Type the option: ";
+                    cin >> OptionStudent;
+                    if (OptionStudent == 1) {
+                        cout << "Enter the Course code" << endl;
+                        cin >> codeCourse;
+                        cout << "Enter the group number" << endl;
+                        cin >> group;
+                        cout << "Enter the Meeting ID of the course" << endl;
+                        cin >> idMeeting;
+                        meetingStudent(IDStudent, codeCourse, group, idMeeting);
+                    }else if(OptionStudent==2)
+                        break;
+
+                    else
+                        cout << "ERROR!!, The typed option does not exist" << endl;
+                }
             } else{
-                cout << "Your Student ID is not registered on the platform" << endl;
+                cout<<"Your Student ID is not registered on the platform" << endl;
                 return;}
         }
         if (num == 3){
             int IDadm;
             string fullName;
-            cout << "Type your Administrator ID " << endl;
+            cout << "Type your Administrator ID: ";
             cin >> IDadm;
-            cout << "Type your Full Name" << endl;
-            cin >> fullName;
+            cin.ignore();
+            cout << "\nType your Full Name: ";
+            getline(cin, fullName);
             Administrators*admin=searchAdmin(fullName, IDadm);
             if(admin != NULL){
-                    cout << "--------WELCOME TO THE ADMINISTRATOR PLATFORM--------" << endl;
+                    cout << "\n--------WELCOME TO THE ADMINISTRATOR PLATFORM--------" << endl;
                     cout << "Type -1- To perform actions on teachers" << endl;
                     cout << "Type -2- To perform actions on students" << endl;
                     cout << "Type -3- To perform actions on courses" << endl;
@@ -1599,14 +1638,15 @@ void menu(){
                     int Id;
                     string gender;
                     if(Option == 1){
-                        cout << "Type -a- To Insert teachers" << endl;
-                        cout << "Type -b- To Delete teachers" << endl;
-                        cout << "Type -c- To Modify teachers" << endl;
-                        cout << "Type the letter of the option"<<endl;
+                        cout << "Type a- To Insert teachers" << endl;
+                        cout << "Type b- To Delete teachers" << endl;
+                        cout << "Type c- To Modify teachers" << endl;
+                        cout << "Type the letter of the option: ";
                         cin>>Options;
                         if(Options == 'a'){
-                            cout<<"Insert the full name of the teacher"<<endl;
-                            cin>>fullname;
+                            cout<<"\nInsert the full name of the teacher"<<endl;
+                            cin.ignore();
+                            getline(cin, fullname);
                             cout<<"Insert the teacher ID"<<endl;
                             cin>>Id;
                             cout<<"Insert the gender of the teacher"<<endl;
@@ -1614,6 +1654,7 @@ void menu(){
                             bool result = addTeacher(fullname, Id, gender);
                             if(result == true){
                                 cout<<"The teacher was added successfully"<<endl;
+                                updateTeachersList();
                             }
                             else
                                 cout<<"The teacher was not added correctly"<<endl;
@@ -1744,7 +1785,7 @@ void menu(){
                     }
             }
             else{
-                cout << "Your Administrator ID is not registered on the platform" << endl;
+                cout << "\nYour Administrator ID is not registered on the platform" << endl;
                 return;}
 
         }
@@ -1756,15 +1797,29 @@ void menu(){
 
 }
 
-
 int main() {
 
     burnedData();
 
+    while(true) {
+        hora=00;
+        cout<<"Ingrese la hora actual (ejemplo: 15:20/29/03/2021): " ;
+        cin >> hora >> c >> minutos >> d >> dia >> a >> mes >> b >> anio;
+
+        if (hora >= 00 && hora <= 23 && c == ':' && minutos >= 0 && minutos <= 59 && d == '/' && dia > 0 && dia < 32 && a == '/' && mes > 0 && mes < 13 && b == '/' && anio > 2020 && anio < 2022) {
+            cout << "\nThe date is correct" << endl;
+            break;
+        }else{
+            cout << "Wrong Format: HHHH/DD/MM/AAAA"<<endl;
+        }
+        continue;
+    }
+
     menu();
+    updateTeachersList();
 
     /*
-    updateTeachersList();
+
     updateStudentsList();
     */
 
