@@ -1,19 +1,16 @@
 #include <iostream>
-#include <conio.h>
-#include <string.h>
 using namespace std;
 
 /*
- * Meeting management
- *      Luz Mora
- *      Bryam Lopez
+ * Meetings management
+ *      Luz Clara Mora Salazar
+ *      Bryam Lopez Miranda
  *      Estefania Perez Hidalgo
  */
 
+//------ Prototype section -----
 
-//------ prototype section -----
-
-void burnedData();
+void HardCode();
 bool addAdmin(string, int, string);
 struct Administrators*searchAdmin(string, int);
 struct Teachers*searchTeacher(string, int);
@@ -24,8 +21,7 @@ struct Courses*searchCourse(string);
 bool addCourse(string, string, int);
 void updateTeachersList();
 void updateStudentsList();
-void imprime();
-struct LinkTeacher;
+void print();
 struct Students;
 struct Courses;
 struct Administrators;
@@ -35,18 +31,17 @@ struct Meeting;
 struct SublistAssistance;
 bool searchDate(Meeting*meet);
 
-int hora=0;
+int hr=0;
 char c;
-int minutos=0;
+int mins=0;
 char d;
-int dia = 0;
-int mes = 0;
-int anio = 0;
+int dy = 0;
+int mth = 0;
+int yr = 0;
 char a;
 char b;
 
-//------ end prototype section -----
-
+//------ End of the prototype section -----
 
 struct Teachers{
     string fullName;
@@ -315,7 +310,6 @@ bool addStudent(string fullName, int id, string gender){//función que agrega es
         if(student != NULL){//esta el estudiante
             cout<<"Student could not be added"<<endl;
             return false;
-
         }else{
             Students*nn= new Students(fullName, id, gender);//crea al estudiante
 
@@ -349,6 +343,7 @@ bool addStudent(string fullName, int id, string gender){//función que agrega es
 
         }
     }
+    return false;
 }
 
 Courses*searchCourse(string code){
@@ -1056,7 +1051,7 @@ bool deleteCourse(string code){
     return true;
 }
 
-void imprime(){
+void print(){
 
     cout<<"\n-----profes-----\n";
     Teachers*temp=firstTeacher;
@@ -1098,20 +1093,20 @@ void imprime(){
 }
 
 bool searchDate(Meeting*meet){
-    int anio=2021;
-    int mes=04;
-    int dia=04;
-    int hora=17;
-    int minuto=00;
-    if(meet->year > anio)
+    int yr=2021;
+    int mth=04;
+    int dy=04;
+    int hr=17;
+    int mins=00;
+    if(meet->year > yr)
         return true;
-    if(anio==meet->year && meet->month > mes)
+    if(yr==meet->year && meet->month > mth)
         return true;
-    if(mes==meet->month && meet->day> dia)
+    if(mth==meet->month && meet->day> dy)
         return true;
-    if(dia==meet->day && meet->hour> hora)
+    if(dy==meet->day && meet->hour> hr)
         return true;
-    if(hora==meet->hour && meet->minute > minuto)
+    if(hr==meet->hour && meet->minute > mins)
         return true;
     return false;
 
@@ -1369,7 +1364,7 @@ void modifyMeetingOfTeacher(int id, string code, int group){
     }
 }
 
-void burnedData(){
+void HardCode(){
 
     //agergar profes
 
@@ -1381,7 +1376,7 @@ void burnedData(){
 
     //agregar estudiantes
 
-    addStudent("Alonzo Martinez", 5, "Male");
+    addStudent("Alonso Martinez", 5, "Male");
     addStudent("Estefania Perez", 2, "Female");
     addStudent("Luz Mora", 3, "Female");
     addStudent("Bryam Lopez", 1, "Male");
@@ -1424,7 +1419,7 @@ void burnedData(){
     relateStudentCourse(1, "CA1103", 52);
     relateStudentCourse(1, "CA1298", 52);
 
-    //Asignar reuinión a un profesor
+    //Asignar reunión a un profesor
 
     meetingTeacher(5, "MA1226",1,  13, 10, 16, 55,29, 05, 2021,  "clase magistral");
     meetingTeacher(5, "MA1226",2,  16, 55, 18, 30,29, 05, 2021,  "clase magistral");
@@ -1470,7 +1465,7 @@ void burnedData(){
     //------Borrar curso------
 
     //deleteCourse("CA1101");
-    //imprime();
+    //print();
 
 
     //Modificar reunión de profesor
@@ -1494,7 +1489,7 @@ void menu(){
         cout << "Type 3- for Administrators" << endl;
         cout << "Type 4- for EXIT" << endl;
         int num;
-        cout << "\nType the number of the option you want to execute on your keyboard: ";
+        cout << "\nType the number on your keyboard of the option you want to execute: ";
         cin >> num;
         string codeCourse;
         int group;
@@ -1505,13 +1500,12 @@ void menu(){
             cin >> idTeacher;
             Teachers*teacher = searchTeacher(idTeacher);
             if (teacher != NULL) {
-
                 while(true) {
                     cout << "\n-------WELCOME TO THE TEACHER PLATFORM--------" << endl;
-                    cout << "Type 1- for insert a meeting to a course" << endl;
-                    cout << "Type 2- for modify a course meeting" << endl;
-                    cout << "Type 3- for delete a course meeting" << endl;
-                    cout << "Type 4- Back to Main Menu" << endl;
+                    cout << "Type 1- To insert a meeting to a course" << endl;
+                    cout << "Type 2- To modify a course meeting" << endl;
+                    cout << "Type 3- To delete a course meeting" << endl;
+                    cout << "Type 4- To go back to main menu" << endl;
                     string optionTeacher;
                     cout << "\nType the option: ";
                     cin >> optionTeacher;
@@ -1531,19 +1525,18 @@ void menu(){
 
                         while (true) {
                             cin.ignore();
-                            cout << "\nEnter the date Meeting of the class to be scheduled (example 18:10/11/05/2021): ";
+                            cout << "\nEnter the date Meeting of the class to be scheduled (example 18:10/11/05/2021): "<<endl;
                             cin >> hour >> c >> minute >> d >> day >> a >> month >> b >> year;
-                            if (hour >= 0 && hour <= 23 && c == ':' && minute >= 0 && minute <= 59 && d == '/' &&
-                                day > 0 && day < 32 && a == '/' && month > 0 && month < 13 && b == '/' &&
-                                year > 2020 && year < 2022) {
+                            if (hour >= 0 && hour <= 23 && c == ':' && minute >= 0 && minute <= 59 && d == '/' &&     //+++++++++++
+                                day > 0 && day < 32 && a == '/' && month > 0 && month < 13 && b == '/' &&             //+Horario
+                                year > 2020 && year < 2022) {                                                         //+++++++++++
 
-                                cout << "\nEnter the date Meeting of the class to be scheduled (example 18:10): ";
+                                cout << "\nEnter the date meeting of the class to be scheduled (example 18:10): ";
 
                                 cin >> hourE >> c >> minuteE;
                                 if (hourE >= 0 && hourE <= 23 && c == ':' && minuteE >= 0 && minuteE <= 59) {
                                     break;
                                 }
-
 
                             } else {
                                 cout << "\nWrong Format: HHHH/DD/MM/AAAA";
@@ -1558,7 +1551,7 @@ void menu(){
                         if (meeting == true)
                             cout << "\nThe meeting was inserted successfully." << endl;
                         else
-                            cout << "\nERROR!! The meeting was not inserted." << endl;
+                            cout << "\nERROR! The meeting was not inserted." << endl;
 
                     } else if (optionTeacher == "2") {
                         cout << "\nEnter the course code: ";
@@ -1577,7 +1570,7 @@ void menu(){
                     } else if (optionTeacher == "4") {
                         menu();
                     } else
-                        cout << "ERROR!!, The typed option does not exist" << endl;
+                        cout << "ERROR! The typed option does not exist" << endl;
 
                 }
             } else
@@ -1601,14 +1594,14 @@ void menu(){
                         cin >> codeCourse;
                         cout << "Enter the group number" << endl;
                         cin >> group;
-                        cout << "Enter the Meeting ID of the course" << endl;
+                        cout << "Enter the meeting's ID of the course" << endl;
                         cin >> idMeeting;
                         meetingStudent(IDStudent, codeCourse, group, idMeeting);
                     }else if(OptionStudent==2)
                         break;
 
                     else
-                        cout << "ERROR!!, The typed option does not exist" << endl;
+                        cout << "ERROR! The typed option does not exist." << endl;
                 }
             } else{
                 cout<<"Your Student ID is not registered on the platform" << endl;
@@ -1753,7 +1746,6 @@ void menu(){
                             else
                                 cout<<"The course was not removed correctly"<<endl;
 
-
                         }
                         if(Options == 'c'){
                             cout<<"Insert the code of the course"<<endl;
@@ -1761,7 +1753,7 @@ void menu(){
                             modifyCourse(code);
                         }
                         else{
-                            cout<<"ERROR!!, The typed option does not exist"<<endl;
+                            cout<<"ERROR! The typed option does not exist"<<endl;
                             return;
                         }
                     }
@@ -1780,7 +1772,7 @@ void menu(){
                         cin>>Options;
                     }
                     else {
-                        cout << "ERROR!!, The typed option does not exist" << endl;
+                        cout << "ERROR! The typed option does not exist" << endl;
                         return;
                     }
             }
@@ -1799,15 +1791,15 @@ void menu(){
 
 int main() {
 
-    burnedData();
+    HardCode();
 
     while(true) {
-        hora=00;
+        hr=00;
         cout<<"Ingrese la hora actual (ejemplo: 15:20/29/03/2021): " ;
-        cin >> hora >> c >> minutos >> d >> dia >> a >> mes >> b >> anio;
+        cin >> hr >> c >> mins >> d >> dy >> a >> mth >> b >> yr;
 
-        if (hora >= 00 && hora <= 23 && c == ':' && minutos >= 0 && minutos <= 59 && d == '/' && dia > 0 && dia < 32 && a == '/' && mes > 0 && mes < 13 && b == '/' && anio > 2020 && anio < 2022) {
-            cout << "\nThe date is correct" << endl;
+        if (hr >= 00 && hr <= 23 && c == ':' && mins >= 0 && mins <= 59 && d == '/' && dy > 0 && dy < 32 && a == '/' && mth > 0 && mth < 13 && b == '/' && yr > 2020 && yr < 2022) {
+            cout << "\nThe date is correct." << endl;
             break;
         }else{
             cout << "Wrong Format: HHHH/DD/MM/AAAA"<<endl;
