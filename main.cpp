@@ -647,7 +647,6 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
     return false;
 }
 
-
 bool meetingStudent(int idStudent, string codeCourse, int courseGroup, int idMeeting){
     Students*student=searchStudent(idStudent);
     if(student==NULL){
@@ -715,64 +714,132 @@ bool meetingStudent(int idStudent, string codeCourse, int courseGroup, int idMee
     cout<<"\nThe student did not attend the meeting"<<endl;
     return false;
 }
-void modifyTeacher(int id){
+
+void modifyTeacherWoCourses(int id){ //Modifies a professor without an assigned course.
 
     Teachers*teacher = searchTeacher(id);
     if(teacher==NULL){
         cout<<"\nTeacher not found"<<endl;
         return;
     }
+    if (teacher->link->course==NULL){
+        string option;
+        cout<<"\nThis is the information of this teacher:"<<endl;
 
-    string option;
-    cout<<"\nThis is the information of this teacher:"<<endl;
+        cout<<"Full name: "<<teacher->fullName<<"\nGender: "<<teacher->gender<<"\nId: "<<teacher->id<<endl;
 
-    cout<<"Full name: "<<teacher->fullName<<"\nGender: "<<teacher->gender<<"\nId: "<<teacher->id<<endl;
+        cout<<"What do you want to modify?\n1- Full name\n2- Gender\n3- ID"<<endl;
 
-    cout<<"What do you want to modify?\n1- Full name\n2- Gender\n3- ID"<<endl;
+        cout<<"Select an option: ";
 
-    cout<<"Select an option: ";
+        cin>>option;
 
-    cin>>option;
+        if(option=="1"){
 
-    if(option=="1"){
+            string name;
+            cout<<"\nWrite new full name: ";
 
-        string name;
-        cout<<"\nWrite new full name: ";
+            cin>>name;
+            teacher->fullName=name;
 
-        cin>>name;
-        teacher->fullName=name;
+            cout<<"\nModification successful!"<<endl;
+            return;
+        }else if(option=="2"){
+            string gender;
+            cout<<"\nWrite new gender: ";
+            cin>>gender;
 
-        cout<<"\nModification successful!"<<endl;
-        return;
-    }else if(option=="2"){
-        string gender;
-        cout<<"\nWrite new gender: ";
-        cin>>gender;
+            teacher->gender=gender;
 
-        teacher->gender=gender;
+            cout<<"\nModification successful!"<<endl;
 
-        cout<<"\nModification successful!"<<endl;
+            return;
+        }else if(option=="3"){
 
-        return;
-    }else if(option=="3"){
+            int newId;
 
-        int newId;
-
-        while(true) {
-            //Miestras el ID no sea válido se pedirá
-            cout << "\nWrite new ID (only numbers): ";
-            cin >> newId;
-            Teachers *teacher2 = searchTeacher(newId);
-            if (teacher2 == NULL) {
-                teacher->id=newId;
-                cout<<"\nModification successful!"<<endl;
-                return;
+            while(true) {
+                //Miestras el ID no sea válido se pedirá
+                cout << "\nWrite new ID (only numbers): ";
+                cin >> newId;
+                Teachers *teacher2 = searchTeacher(newId);
+                if (teacher2 == NULL) {
+                    teacher->id=newId;
+                    cout<<"\nModification successful!"<<endl;
+                    return;
+                }
+                cout << "\nThis ID is not available, please try another" << endl;
             }
-            cout << "\nThis ID is not available, please try another" << endl;
         }
-
-
     }
+    else{
+        cout<<"The professor already has courses assigned.";
+        return;
+    }
+
+}
+void modifyTeacherWithCourses(int id){ //Modifies a professor without an assigned course.
+
+    Teachers*teacher = searchTeacher(id);
+    if(teacher==NULL){
+        cout<<"\nTeacher not found"<<endl;
+        return;
+    }
+    if (teacher->link->course!=NULL){
+        string option;
+        cout<<"\nThis is the information of this teacher:"<<endl;
+
+        cout<<"Full name: "<<teacher->fullName<<"\nGender: "<<teacher->gender<<"\nId: "<<teacher->id<<endl;
+
+        cout<<"What do you want to modify?\n1- Full name\n2- Gender\n3- ID"<<endl;
+
+        cout<<"Select an option: ";
+
+        cin>>option;
+
+        if(option=="1"){
+
+            string name;
+            cout<<"\nWrite new full name: ";
+
+            cin>>name;
+            teacher->fullName=name;
+
+            cout<<"\nModification successful!"<<endl;
+            return;
+        }else if(option=="2"){
+            string gender;
+            cout<<"\nWrite new gender: ";
+            cin>>gender;
+
+            teacher->gender=gender;
+
+            cout<<"\nModification successful!"<<endl;
+
+            return;
+        }else if(option=="3"){
+
+            int newId;
+
+            while(true) {
+                //Miestras el ID no sea válido se pedirá
+                cout << "\nWrite new ID (only numbers): ";
+                cin >> newId;
+                Teachers *teacher2 = searchTeacher(newId);
+                if (teacher2 == NULL) {
+                    teacher->id=newId;
+                    cout<<"\nModification successful!"<<endl;
+                    return;
+                }
+                cout << "\nThis ID is not available, please try another" << endl;
+            }
+        }
+    }
+    else{
+        cout<<"The professor already has no courses assigned.";
+        return;
+    }
+
 }
 void deleteLinkCourseStudent(string code, int group=0){
     Students*temp=firstStudent;
@@ -1369,6 +1436,7 @@ void HardCode(){
 
     addTeacher("Lorena Picado", 1, "Female");
     addTeacher("Abel Mendez", 2, "Male");
+    addTeacher("Oscar Viquez", 6, "Male");
     addTeacher("Rocio Aguilar", 3, "Female");
     addTeacher("Vera Gamboa", 4, "Female");
     addTeacher("Karina Gonzales", 5, "Female");
@@ -1400,7 +1468,6 @@ void HardCode(){
 
     //Relacionar profesor con curso
 
-    relateTeacherCourse(5, "MA1226", 51);
     relateTeacherCourse(5, "MA7878", 53);
     relateTeacherCourse(2, "CA1558", 50);
     relateTeacherCourse(1, "CA1101", 51);
@@ -1632,7 +1699,8 @@ void menu(){
                     if(Option == 1){
                         cout << "Type a- To Insert teachers" << endl;
                         cout << "Type b- To Delete teachers" << endl;
-                        cout << "Type c- To Modify teachers" << endl;
+                        cout << "Type c- To Modify teachers with no assigned courses" << endl;
+                        cout << "Type d- To Modify teachers with assigned courses" << endl;
                         cout << "Type the letter of the option: ";
                         cin>>Options;
                         if(Options == 'a'){
@@ -1664,7 +1732,12 @@ void menu(){
                         if(Options == 'c'){
                             cout<<"Insert the teacher ID"<<endl;
                             cin>>Id;
-                            modifyTeacher(Id);
+                            modifyTeacherWoCourses(Id); //****************************************************
+                        }
+                        if(Options == 'd'){
+                            cout<<"Insert the teacher ID"<<endl;
+                            cin>>Id;
+                            //modifyTeacherWithCourses(Id); //****************************************************
                         }
                         else{
                             cout<<"ERROR!!, The typed option does not exist"<<endl;
