@@ -100,7 +100,7 @@ struct Administrators{
     int id;
     string gender;
 
-    Administrators*sig;
+    Administrators*next;
     Teachers*subListT;
     Students*subListS;
     Courses*subListC;
@@ -110,7 +110,7 @@ struct Administrators{
         fullName=fn;
         id=i;
         gender=g;
-        sig=NULL;
+        next=NULL;
         subListT=firstTeacher;
         subListS=firstStudent;  //la sublista es igual a la lista general ya que es compartida
         subListC=firstCourse;
@@ -211,7 +211,7 @@ Administrators*searchAdmin(string fullName, int id){
             cout<<"\nThe ID is already part of the administrators\n"<<endl;
             return temp;
         }
-        temp=temp->sig;
+        temp=temp->next;
     }
     return NULL; //if return NULL the admin is not
 
@@ -235,7 +235,7 @@ bool addAdmin(string fullName, int id, string gender){
         }else{
             Administrators*nn= new Administrators(fullName, id, gender);//crea al admin
 
-            nn->sig=firstAdmin;
+            nn->next=firstAdmin;
             firstAdmin=nn;      //hace inserción al inicio de lista simple
 
             return true;
@@ -401,7 +401,7 @@ void updateTeachersList(){//Actializa en firstTeacher en cada admin
 
     while(temp != NULL){
         temp->subListT=firstTeacher;
-        temp=temp->sig;
+        temp=temp->next;
     }
 }
 void updateStudentsList(){//Actializa en firstStudent en cada admin
@@ -415,7 +415,7 @@ void updateStudentsList(){//Actializa en firstStudent en cada admin
 
     while(temp != NULL){
         temp->subListS=firstStudent;
-        temp=temp->sig;
+        temp=temp->next;
     }
 }
 
@@ -606,7 +606,6 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
         if(temp->course->code == codeCourse){
 
             Meeting*nn= new Meeting(idMeeting, hour, minute, hourE, minuteE, day, month, year, titleMeeting);
-
             if(temp->firstMeeting==NULL){
                 teacher->link->firstMeeting=nn;
                 return true;
@@ -1470,7 +1469,7 @@ void HardCode(){
 
     //Modificar reunión de profesor
 
-   //deleteMeetingOfTeacher(5,"MA1226", 51);
+    //deleteMeetingOfTeacher(5,"MA1226", 51);
     //modifyMeetingOfTeacher(5, "MA1226", 51);
 
 }
@@ -1548,7 +1547,7 @@ void menu(){
                         getline(cin, titleMeeting);
 
                         bool meeting = meetingTeacher(idTeacher, codeCourse, idMeeting, hour, minute, hourE, minuteE, day, month, year, titleMeeting);
-                        if (meeting == true)
+                        if (meeting)
                             cout << "\nThe meeting was inserted successfully." << endl;
                         else
                             cout << "\nERROR! The meeting was not inserted." << endl;
@@ -1795,7 +1794,7 @@ int main() {
 
     while(true) {
         hr=00;
-        cout<<"Ingrese la hora actual (ejemplo: 15:20/29/03/2021): " ;
+        cout<<"Ingrese la hora actual (formato: HHHH/DD/MM/AAAA; ejemplo: 15:20/29/03/2021): " ;
         cin >> hr >> c >> mins >> d >> dy >> a >> mth >> b >> yr;
 
         if (hr >= 00 && hr <= 23 && c == ':' && mins >= 0 && mins <= 59 && d == '/' && dy > 0 && dy < 32 && a == '/' && mth > 0 && mth < 13 && b == '/' && yr > 2020 && yr < 2022) {
