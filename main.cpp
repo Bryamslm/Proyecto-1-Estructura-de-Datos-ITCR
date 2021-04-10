@@ -722,7 +722,7 @@ void modifyTeacherWoCourses(int id){ //Modifies a professor without an assigned 
         cout<<"\nTeacher not found"<<endl;
         return;
     }
-    if (teacher->link->course==NULL){
+    if (teacher->link==NULL){
         string option;
         cout<<"\nThis is the information of this teacher:"<<endl;
 
@@ -776,7 +776,6 @@ void modifyTeacherWoCourses(int id){ //Modifies a professor without an assigned 
         cout<<"The professor already has courses assigned.";
         return;
     }
-
 }
 void modifyTeacherWithCourses(int id){ //Modifies a professor without an assigned course.
 
@@ -969,8 +968,6 @@ void modifyStudent(int id){
             }
             cout << "\nThis ID is not available, please try another" << endl;
         }
-
-
     }
 }
 bool deleteStudent(int id){
@@ -1593,9 +1590,9 @@ void menu(){
                             cin.ignore();
                             cout << "\nEnter the date Meeting of the class to be scheduled (example 18:10/11/05/2021): "<<endl;
                             cin >> hour >> c >> minute >> d >> day >> a >> month >> b >> year;
-                            if (hour >= 0 && hour <= 23 && c == ':' && minute >= 0 && minute <= 59 && d == '/' &&     //+++++++++++
-                                day > 0 && day < 32 && a == '/' && month > 0 && month < 13 && b == '/' &&             //+Horario
-                                year > 2020 && year < 2022) {                                                         //+++++++++++
+                            if (hour >= 0 && hour <= 23 && c == ':' && minute >= 0 && minute <= 59 && d == '/' &&
+                                day > 0 && day < 32 && a == '/' && month > 0 && month < 13 && b == '/' &&
+                                year > 2020 && year < 2022) {
 
                                 cout << "\nEnter the date meeting of the class to be scheduled (example 18:10): ";
 
@@ -1642,7 +1639,7 @@ void menu(){
             } else
                 cout<<"Your teacher ID  is not registered on the platform" << endl;
         }
-        if (num == 2) {
+        else if (num == 2) {
             int IDStudent;
             cout << "\nType your ID Studen: ";
             cin >> IDStudent;
@@ -1673,7 +1670,7 @@ void menu(){
                 cout<<"Your Student ID is not registered on the platform" << endl;
                 return;}
         }
-        if (num == 3){
+        else if (num == 3){
             int IDadm;
             string fullName;
             cout << "Type your Administrator ID: ";
@@ -1684,11 +1681,11 @@ void menu(){
             Administrators*admin=searchAdmin(fullName, IDadm);
             if(admin != NULL){
                     cout << "\n--------WELCOME TO THE ADMINISTRATOR PLATFORM--------" << endl;
-                    cout << "Type -1- To perform actions on teachers" << endl;
-                    cout << "Type -2- To perform actions on students" << endl;
+                    cout << "Type -1- To perform actions on teachers with no assigned courses" << endl;
+                    cout << "Type -2- To perform actions on students with no assigned courses" << endl;
                     cout << "Type -3- To perform actions on courses" << endl;
-                    cout << "Type -4- To perform actions on teachers with courses" << endl;
-                    cout << "Type -5- To perform actions on students with courses" << endl;
+                    cout << "Type -4- To perform actions on teachers with assigned courses" << endl;
+                    cout << "Type -5- To perform actions on students with assigned courses" << endl;
                     int Option;
                     cout << "\nType the number of the option you want to execute on your keyboard" << endl;
                     cin >> Option;
@@ -1700,7 +1697,6 @@ void menu(){
                         cout << "Type a- To Insert teachers" << endl;
                         cout << "Type b- To Delete teachers" << endl;
                         cout << "Type c- To Modify teachers with no assigned courses" << endl;
-                        cout << "Type d- To Modify teachers with assigned courses" << endl;
                         cout << "Type the letter of the option: ";
                         cin>>Options;
                         if(Options == 'a'){
@@ -1719,7 +1715,7 @@ void menu(){
                             else
                                 cout<<"The teacher was not added correctly"<<endl;
                         }
-                        if(Options == 'b'){
+                        else if(Options == 'b'){
                             cout<<"Insert the teacher ID"<<endl;
                             cin>>Id;
                             bool result = deleteTeacher(Id);
@@ -1729,22 +1725,17 @@ void menu(){
                             else
                                 cout<<"The teacher was not removed correctly"<<endl;
                         }
-                        if(Options == 'c'){
+                        else if(Options == 'c'){
                             cout<<"Insert the teacher ID"<<endl;
                             cin>>Id;
                             modifyTeacherWoCourses(Id); //****************************************************
-                        }
-                        if(Options == 'd'){
-                            cout<<"Insert the teacher ID"<<endl;
-                            cin>>Id;
-                            //modifyTeacherWithCourses(Id); //****************************************************
                         }
                         else{
                             cout<<"ERROR!!, The typed option does not exist"<<endl;
                             return;
                         }
                     }
-                    if(Option == 2){
+                    else if(Option == 2){
                         cout << "Type -a- To Insert students" << endl;
                         cout << "Type -b- To Delete students" << endl;
                         cout << "Type -c- To Modify students" << endl;
@@ -1764,7 +1755,7 @@ void menu(){
                             else
                                 cout<<"The student was not added correctly"<<endl;
                         }
-                        if(Options == 'b'){
+                        else if(Options == 'b'){
                             cout<<"Insert the Student ID"<<endl;
                             cin>>Id;
                             bool result = deleteStudent(Id);
@@ -1775,7 +1766,7 @@ void menu(){
                                 cout<<"The student was not removed correctly"<<endl;
 
                         }
-                        if(Options == 'c'){
+                        else if(Options == 'c'){
                             cout<<"Insert the student ID"<<endl;
                             cin>>Id;
                             modifyStudent(Id);
@@ -1785,7 +1776,7 @@ void menu(){
                             return;
                         }
                     }
-                    if(Option == 3){
+                    else if(Option == 3){
                         cout << "Type -a- To Insert courses" << endl;
                         cout << "Type -b- To Delete courses" << endl;
                         cout << "Type -c- To Modify courses" << endl;
@@ -1808,7 +1799,7 @@ void menu(){
                             else
                                 cout<<"The course was not added correctly"<<endl;
                         }
-                        if(Options == 'b'){
+                        else if(Options == 'b'){
                             cout<<"Insert the code of the course"<<endl;
                             cin>>code;
                             bool result = deleteCourse(code);
@@ -1819,7 +1810,7 @@ void menu(){
                                 cout<<"The course was not removed correctly"<<endl;
 
                         }
-                        if(Options == 'c'){
+                        else if(Options == 'c'){
                             cout<<"Insert the code of the course"<<endl;
                             cin>>code;
                             modifyCourse(code);
@@ -1828,15 +1819,21 @@ void menu(){
                             cout<<"ERROR! The typed option does not exist"<<endl;
                             return;
                         }
+                        cin.ignore();
                     }
-                    if(Option == 4){
+                    else if(Option == 4){
                         cout << "Type -a- To Insert teachers with courses" << endl;
                         cout << "Type -b- To Delete teachers with courses" << endl;
                         cout << "Type -c- To Modify teachers with courses" << endl;
                         cout << "Type the letter of the option"<<endl;
                         cin>>Options;
+                        if(Options == 'c'){
+                            cout<<"Insert the teacher ID"<<endl;
+                            cin>>Id;
+                            modifyTeacherWithCourses(Id); //****************************************************
+                            }
                     }
-                    if(Option == 5){
+                    else if(Option == 5){
                         cout << "Type -a- To Insert students with courses" << endl;
                         cout << "Type -b- To Delete students with courses" << endl;
                         cout << "Type -c- To Modify students with courses" << endl;
@@ -1853,7 +1850,7 @@ void menu(){
                 return;}
 
         }
-        if (num == 4){
+        else if (num == 4){
             cout<<"Gracias por usar nuestra plataforma"<<endl;
             break;
         }
@@ -1880,7 +1877,7 @@ int main() {
     }
 
     menu();
-    updateTeachersList();
+    //updateTeachersList();
 
     /*
 
