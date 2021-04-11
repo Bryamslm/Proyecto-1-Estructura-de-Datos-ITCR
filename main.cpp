@@ -570,7 +570,7 @@ bool searchiDMeeting(int idMeeting){
     return true;
 }
 
-bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, int minute, int hourE, int minuteE,int day, int month, int year, string titleMeeting){
+bool meetingTeacher(int idTeacher, string codeCourse,int group, int idMeeting, int hour, int minute, int hourE, int minuteE,int day, int month, int year, string titleMeeting){
 
     if(hourE< hour){
         cout<<"\nThe end time must be greater than the start time"<<endl;
@@ -603,11 +603,11 @@ bool meetingTeacher(int idTeacher, string codeCourse, int idMeeting, int hour, i
          * el enlace del curso es porque el curso no esta siendo impartido, por lo tanto no se puede asignar la reunion
          */
 
-        if(temp->course->code == codeCourse){
+        if(temp->course->code == codeCourse && temp->group==group){
 
             Meeting*nn= new Meeting(idMeeting, hour, minute, hourE, minuteE, day, month, year, titleMeeting);
             if(temp->firstMeeting==NULL){
-                teacher->link->firstMeeting=nn;
+                temp->firstMeeting=nn;
                 return true;
             }else{
                 Meeting*temp2=temp->firstMeeting;
@@ -1540,6 +1540,7 @@ void HardCode(){
     relateTeacherCourse(3, "CA1103", 52);
     relateTeacherCourse(4, "CA1298", 52);
     relateTeacherCourse(5, "MA1226", 51);
+    relateTeacherCourse(5, "MA1226", 53);
 
     //Relacionar estudiante con curso
 
@@ -1553,13 +1554,13 @@ void HardCode(){
     relateStudentCourse(1, "CA1298", 52);
 
     //Asignar reunión a un profesor
-    meetingTeacher(5, "MA1226",1,  13, 10, 16, 55,29, 05, 2021,  "clase magistral");
-    meetingTeacher(5, "MA1226",2,  16, 55, 18, 30,29, 05, 2021,  "clase magistral");
-    meetingTeacher(5, "MA1226",7,  15, 10, 19, 30,02, 04, 2021,  "clase magistral");
-    meetingTeacher(4, "CA1298",3,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
-    meetingTeacher(3, "CA1103",4,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
-    meetingTeacher(2, "CA1558",5,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
-    meetingTeacher(1, "CA1101",6,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
+    meetingTeacher(5, "MA1226",51 ,1,  13, 10, 16, 55,18, 04, 2021,  "clase magistral");
+    meetingTeacher(5, "MA1226",51,2,  16, 55, 18, 30,22, 04, 2021,  "clase magistral");
+    meetingTeacher(5, "MA1226",53,7,  15, 10, 19, 30,23, 04, 2021,  "clase magistral");
+    meetingTeacher(4, "CA1298",52,3,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
+    meetingTeacher(3, "CA1103",52 ,4,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
+    meetingTeacher(2, "CA1558",50 ,5,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
+    meetingTeacher(1, "CA1101",51 ,6,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
 
 
     //Estudiantes indican reunion en la que participaron
@@ -1606,7 +1607,56 @@ void HardCode(){
     //modifyMeetingOfTeacher(5, "MA1226", 51);
 
 }
+void viewNextMeetings(Teachers*teacher){
 
+    int contador=7;
+
+
+    if(teacher->link!=NULL){
+        cout<<"\n\tThis are the meetings for the next week:\n";
+        while(contador<=13){
+            LinkTeacher*temp=teacher->link;
+
+            int mounthM=mth;
+            int dayM=dy+contador;
+            int yearM=yr;
+            if(dayM>32){
+                dayM=dayM-32;
+                mounthM=mth+1;
+                if(mounthM>12){
+                    mounthM=mounthM-12;
+                    yearM=yr+1;
+                }
+            }
+            cout<<"\n"<<dayM<<"/"<<mounthM<<"/"<<yearM<<":";
+            bool print=false;
+
+            while(temp!= NULL){
+
+                Meeting*temp2=temp->firstMeeting;
+
+                while(temp2 != NULL){
+
+                    if(temp2->year=yearM && temp2->month==mounthM && temp2->day==dayM){
+                        print=true;
+
+                        cout<<"\n\tMeeting at "<<temp2->hour<<":"<<temp2->minute<<" of "<<temp->course->name<<" group "<<temp->group<<endl;
+
+                    }
+
+                    temp2=temp2->next;
+                }
+
+                temp=temp->next;
+            }
+            if(!print)
+                cout<<"\nThere aren't meetings scheduleds for these day"<<endl;
+
+            contador++;
+
+        }
+    }
+}
 
 //-----------------------
 //ARRIBA DEL MÉTODO MEETINGSTUDENT ESTAN VARIABLES SIMULANDO UNA FECHA, PARA NO ESTAR INGRESANDO POR CONSOLA TANTO
@@ -1637,7 +1687,9 @@ void menu(){
                     cout << "Type 1- To insert a meeting to a course" << endl;
                     cout << "Type 2- To modify a course meeting" << endl;
                     cout << "Type 3- To delete a course meeting" << endl;
-                    cout << "Type 4- To go back to main menu" << endl;
+                    cout << "Type 4- View meetings for next week" << endl;
+                    cout << "Type 7- To go back to main menu" << endl;
+
                     string optionTeacher;
                     cout << "\nType the option: ";
                     cin >> optionTeacher;
@@ -1652,6 +1704,8 @@ void menu(){
                         string titleMeeting;
                         cout << "\nEnter the code of the Course class to be scheduled: ";
                         cin >> codeCourse;
+                        cout << "\nEnter the group of the Course class to be scheduled: ";
+                        cin >> group;
                         cout << "\nEnter the Meeting ID of the class to be scheduled: ";
                         cin >> idMeeting;
 
@@ -1679,7 +1733,7 @@ void menu(){
                         cin.ignore();
                         getline(cin, titleMeeting);
 
-                        bool meeting = meetingTeacher(idTeacher, codeCourse, idMeeting, hour, minute, hourE, minuteE, day, month, year, titleMeeting);
+                        bool meeting = meetingTeacher(idTeacher, codeCourse,group, idMeeting, hour, minute, hourE, minuteE, day, month, year, titleMeeting);
                         if (meeting)
                             cout << "\nThe meeting was inserted successfully." << endl;
                         else
@@ -1694,12 +1748,19 @@ void menu(){
 
 
                     } else if (optionTeacher == "3") {
+
                         cout << "\nEnter the course code: ";
                         cin >> codeCourse;
                         cout << "\nEnter the group number: ";
                         cin >> group;
+
                         deleteMeetingOfTeacher(idTeacher, codeCourse, group);
-                    } else if (optionTeacher == "4") {
+                    }else if (optionTeacher == "4") {
+
+
+                            viewNextMeetings(teacher);
+
+                        } else if (optionTeacher == "7") {
                         menu();
                     } else
                         cout << "ERROR! The typed option does not exist" << endl;
