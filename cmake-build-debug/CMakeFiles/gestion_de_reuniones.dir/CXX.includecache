@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Martin Perez/Dropbox/I Semestre/Data structure/Project/GR/gestion-de-reuniones/main.cpp
+iostream
+-
+queue
+-
+
