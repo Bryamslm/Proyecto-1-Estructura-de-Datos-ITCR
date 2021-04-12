@@ -22,7 +22,7 @@ struct Courses*searchCourse(string);
 bool addCourse(string, string, int);
 void updateTeachersList();
 void updateStudentsList();
-void print();
+void print(string);
 struct Students;
 struct Courses;
 struct Administrators;
@@ -870,46 +870,91 @@ void deleteLinkCourseStudent(string code, int group=0){
     }
 
 }
-bool deleteTeacher(int id){
+bool deleteTeacherWoCourses(int id){
     Teachers*teacher= searchTeacher(id);
     if(teacher==NULL) {
         cout << "Teacher not found" << endl;
         return false;
     }
-    LinkTeacher*courses=teacher->link;
-    while(courses != NULL){
-        //Ciclo que llama a funcion para borrar curso de estudiantes que imparte  el profesor a borrar
-        deleteLinkCourseStudent(courses->course->code, courses->group);
-        courses=courses->next;
+    if (teacher->link==NULL) {
+        if (firstTeacher == teacher) {
+            //Si el que se debe borrar es el primero de lista, solo se hace que el siguiente en previos apunte a NULL
+            // y se redefine el firstTeacher como el segundo de la lista :)
+            Teachers *temp = firstTeacher->next;
+            temp->previous = NULL;
+            firstTeacher = temp;
+            cout << "\nDelete successful!" << endl;
+            return true;
+        } else if (teacher->next == NULL) {//Con el NULL no sirve, CLion me lo autocorrigió puso nullptr y sirvió
+            //Si el que se debe borrar es el último de lista, solo se hace que el que está de penultimo apunte a NULL
+            Teachers *temp2 = teacher->previous;
+            temp2->next = NULL;
+            cout << "\nDelete successful! central" << endl;
+            return true;
+        } else {
+            //Si el que se debe borrar tiene anterior y siguiente diferentes de NULL, solo se hace que el anterior
+            //apunte en next al que está apuntando el que se va a borrar en siguiente y ese siguinte en previous apunte
+            //al que está antes del que se va a borrar, basicamente se deja de apuntar al que se va a borrar
+            Teachers *temp3 = teacher->previous;
+            Teachers *temp4 = teacher->next;
+            temp3->next = temp4;
+            temp4->previous = temp3;
+            cout << "\nDelete successful! first" << endl;
+            return true;
+        }
     }
-    if(teacher->next==NULL && teacher->previous==NULL){
-        firstTeacher=NULL;
-        cout<<"\nDelete successful!"<<endl;
-        return true;
-    }else if(firstTeacher==teacher){
-        //Si el que se debe borrar es el primero de lista, solo se hace que el siguiente en previos apunte a NULL
-        // y se redefine el firstTeacher como el segundo de la lista :)
-        Teachers*temp=firstTeacher->next;
-        temp->previous=NULL;
-        firstTeacher=temp;
-        cout<<"\nDelete successful!"<<endl;
-        return true;
-    } else if(teacher->next==nullptr){//Con el NULL no sirve, CLion me lo autocorrigió puso nullptr y sirvió
-        //Si el que se debe borrar es el último de lista, solo se hace que el que está de penultimo apunte a NULL
-        Teachers*temp2=teacher->previous;
-        temp2->next=NULL;
-        cout<<"\nDelete successful! central"<<endl;
-        return true;
-    }else{
-        //Si el que se debe borrar tiene anterior y siguiente diferentes de NULL, solo se hace que el anterior
-        //apunte en next al que está apuntando el que se va a borrar en siguiente y ese siguinte en previous apunte
-        //al que está antes del que se va a borrar, basicamente se deja de apuntar al que se va a borrar
-        Teachers*temp3=teacher->previous;
-        Teachers*temp4=teacher->next;
-        temp3->next=temp4;
-        temp4->previous=temp3;
-        cout<<"\nDelete successful! first"<<endl;
-        return true;
+    else{
+        cout<<"The professor already has courses assigned.";
+        return false;
+    }
+}
+bool deleteTeacherWithCourses(int id){
+    Teachers*teacher= searchTeacher(id);
+    if(teacher==NULL) {
+        cout << "Teacher not found" << endl;
+        return false;
+    }
+    if (teacher->link!=NULL) {
+        LinkTeacher*courses=teacher->link;
+        while(courses != NULL){
+            //Ciclo que llama a funcion para borrar curso de estudiantes que imparte  el profesor a borrar
+            deleteLinkCourseStudent(courses->course->code, courses->group);
+            courses=courses->next;
+        }
+        if(teacher->next==NULL && teacher->previous==NULL){
+            firstTeacher=NULL;
+            cout<<"\nDeleted successfully!"<<endl;
+            return true;
+        }else if(firstTeacher==teacher){
+            //Si el que se debe borrar es el primero de lista, solo se hace que el siguiente en previos apunte a NULL
+            // y se redefine el firstTeacher como el segundo de la lista :)
+            Teachers*temp=firstTeacher->next;
+            temp->previous=NULL;
+            firstTeacher=temp;
+            cout<<"\nDeleted successfully!"<<endl;
+            return true;
+        } else if(teacher->next==NULL){//Con el NULL no sirve, CLion me lo autocorrigió puso nullptr y sirvió
+            //Si el que se debe borrar es el último de lista, solo se hace que el que está de penultimo apunte a NULL
+            Teachers*temp2=teacher->previous;
+            temp2->next=NULL;
+            cout<<"\nDeleted successfully!"<<endl;
+            return true;
+        }else{
+            //Si el que se debe borrar tiene anterior y siguiente diferentes de NULL, solo se hace que el anterior
+            //apunte en next al que está apuntando el que se va a borrar en siguiente y ese siguinte en previous apunte
+            //al que está antes del que se va a borrar, basicamente se deja de apuntar al que se va a borrar
+            Teachers*temp3=teacher->previous;
+            Teachers*temp4=teacher->next;
+            temp3->next=temp4;
+            temp4->previous=temp3;
+            cout<<"\nDeleted successfully!"<<endl;
+            //print("professors");
+            return true;
+        }
+    }
+    else{
+        cout<<"The professor does not have courses assigned.";
+        return false;
     }
 }
 void modifyStudentWoCourses(int id){
@@ -976,7 +1021,7 @@ void modifyStudentWoCourses(int id){
         return;
     }
 }
-void modifyStudenWithCourses(int id){
+void modifyStudentWithCourses(int id){
 
     Students*student= searchStudent(id);
 
@@ -1036,33 +1081,67 @@ void modifyStudenWithCourses(int id){
         }
     }
     else{
-        cout<<"The student already has courses assigned.";
+        cout<<"The student does not have courses assigned.";
         return;
     }
 }
-bool deleteStudent(int id){
+bool deleteStudentWithCourses(int id){
 
     Students*student=searchStudent(id);
     if(student==NULL){
         cout << "Student not found" << endl;
         return false;
     }
+    if (student->link!=NULL){
+        if(student==firstStudent){
+            firstStudent=firstStudent->next;
+            cout<<"\nDeleted successfully!"<<endl;
+            return true;
+        }
 
-    if(student==firstStudent){
-        firstStudent=firstStudent->next;
-        cout<<"\nDelete successful!"<<endl;
+        Students*temp=firstStudent;
+
+        while(temp->next != student){
+            temp=temp->next;
+        }
+        temp->next=student->next;
+
+        cout<<"\nDeleted successfully!"<<endl;
         return true;
     }
-
-    Students*temp=firstStudent;
-
-    while(temp->next != student){
-        temp=temp->next;
+    else {
+        cout << "The student does not have courses assigned.";
+        return false;
     }
-    temp->next=student->next;
+}
+bool deleteStudentWoCourses(int id){
 
-    cout<<"\nDelete successful!"<<endl;
-    return true;
+    Students*student=searchStudent(id);
+    if(student==NULL){
+        cout << "Student not found" << endl;
+        return false;
+    }
+    if (student->link==NULL){
+        if(student==firstStudent){
+            firstStudent=firstStudent->next;
+            cout<<"\nDeleted successfully!"<<endl;
+            return true;
+        }
+
+        Students*temp=firstStudent;
+
+        while(temp->next != student){
+            temp=temp->next;
+        }
+        temp->next=student->next;
+
+        cout<<"\nDeleted successfully!"<<endl;
+        return true;
+    }
+    else {
+        cout << "The student does not have courses assigned.";
+        return false;
+    }
 }
 
 void modifyCourse(string code){
@@ -1120,7 +1199,6 @@ void modifyCourse(string code){
             }
             cout << "\nThis code is not available, please try another" << endl;
         }
-
     }
 }
 
@@ -1184,45 +1262,59 @@ bool deleteCourse(string code){
     return true;
 }
 
-void print(){
+void print(string n){
+    //cout << "--------Print Menu--------" << endl;
+    //cout << "Type 1- for teachers" << endl;
+    //cout << "Type 2- for Students" << endl;
+    //cout << "Type 3- for courses" << endl;
+    //cout << "Type 4- for EXIT" << endl;
+    //int num;
+    //cout << "\nType the number on your keyboard of the option you want to execute: ";
+    //cin >> num;
+    if (n == "professors") {
+        cout<<"\n-----Professors-----\n";
+        Teachers*temp=firstTeacher;
 
-    cout<<"\n-----profes-----\n";
-    Teachers*temp=firstTeacher;
-
-    while(temp != NULL){
-        cout<<"\n"<<temp->fullName<<endl;
-        LinkTeacher*temp2=temp->link;
-        while(temp2 != NULL){
-            cout<<temp2->course->name<<endl;
-            temp2=temp2->next;
+        while(temp != NULL){
+            cout<<"\n"<<temp->fullName<<endl;
+            LinkTeacher*temp2=temp->link;
+            while(temp2 != NULL){
+                cout<<temp2->course->name<<endl;
+                temp2=temp2->next;
+            }
+            temp=temp->next;
         }
-        temp=temp->next;
-
     }
-    cout<<"\n-----estudiantes-----\n";
+    else if (n == "students") {
+        cout<<"\n-----Students-----\n";
 
-    Students*temp3=firstStudent;
+        Students*temp3=firstStudent;
 
-    while(temp3 != NULL){
-        cout<<"\n"<<temp3->fullName<<endl;
-        LinkStudent*temp4= temp3->link;
-        while(temp4 != NULL){
-            cout<<temp4->course->name<<endl;
-            temp4=temp4->next;
+        while(temp3 != NULL){
+            cout<<"\n"<<temp3->fullName<<endl;
+            LinkStudent*temp4= temp3->link;
+            while(temp4 != NULL){
+                cout<<temp4->course->name<<endl;
+                temp4=temp4->next;
+            }
+            temp3=temp3->next;
+
         }
-        temp3=temp3->next;
-
     }
+    else if (n == "courses") {
+        cout << "\n-----Courses-----\n";
 
-    cout<<"\n-----cursos-----\n";
+        Courses *course = firstCourse;
 
-    Courses*course=firstCourse;
-
-    do{
-        cout<<course->name<<"---"<<course->code<<endl;
-        course=course->next;
-    }while(course != firstCourse);
-
+        do {
+            cout << course->name << "---" << course->code << endl;
+            course = course->next;
+        } while (course != firstCourse);
+    }
+    /*else if (num == 4) {
+        cout<<"Thanks for using our platform!"<<endl;
+        return;
+    }*/
 }
 
 bool searchDate(Meeting*meet){
@@ -1673,7 +1765,7 @@ void viewNextMeetings(Teachers*teacher){
     }
 }
 
-void  viewAssists(Teachers*teacher){
+void viewAssists(Teachers*teacher){
 
     LinkTeacher*temp=teacher->link;
 
@@ -1874,7 +1966,7 @@ void menu(){
             } else
                 cout<<"Your teacher ID  is not registered on the platform" << endl;
         }
-        else if (num == 2) {
+        else if (num == 2){
             int IDStudent;
             cout << "\nType your ID Studen: ";
             cin >> IDStudent;
@@ -1953,7 +2045,7 @@ void menu(){
                         else if(Options == 'b'){
                             cout<<"Insert the teacher ID"<<endl;
                             cin>>Id;
-                            bool result = deleteTeacher(Id);
+                            bool result = deleteTeacherWoCourses(Id);
                             if(result == true){
                                 cout<<"The teacher was deleted successfully"<<endl;
                             }
@@ -1985,20 +2077,20 @@ void menu(){
                             cin>>gender;
                             bool result = addStudent(fullname, Id, gender);
                             if(result == true){
-                                cout<<"The student was added successfully"<<endl;
+                                cout<<"The student was added successfully."<<endl;
                             }
                             else
-                                cout<<"The student was not added correctly"<<endl;
+                                cout<<"The student was not added correctly."<<endl;
                         }
                         else if(Options == 'b'){
                             cout<<"Insert the Student ID"<<endl;
                             cin>>Id;
-                            bool result = deleteStudent(Id);
+                            bool result = deleteStudentWoCourses(Id);
                             if(result == true){
-                                cout<<"The student was deleted successfully"<<endl;
+                                cout<<"The student was deleted successfully."<<endl;
                             }
                             else
-                                cout<<"The student was not removed correctly"<<endl;
+                                cout<<"The student was not removed."<<endl;
 
                         }
                         else if(Options == 'c'){
@@ -2061,7 +2153,12 @@ void menu(){
                         cout << "Type -c- To Modify teachers with courses" << endl;
                         cout << "Type the letter of the option"<<endl;
                         cin>>Options;
-                        if(Options == 'c'){
+                        if(Options == 'b'){
+                            cout<<"Insert the teacher ID"<<endl;
+                            cin>>Id;
+                            deleteTeacherWithCourses(Id); //****************************************************
+                        }
+                        else if(Options == 'c'){
                             cout<<"Insert the teacher ID"<<endl;
                             cin>>Id;
                             modifyTeacherWithCourses(Id); //****************************************************
@@ -2077,10 +2174,15 @@ void menu(){
                         cout << "Type -c- To Modify students with courses" << endl;
                         cout << "Type the letter of the option"<<endl;
                         cin>>Options;
-                        if(Options == 'c'){
+                        if(Options == 'b'){
                             cout<<"Insert the teacher ID"<<endl;
                             cin>>Id;
-                            modifyStudenWithCourses(Id); //****************************************************
+                            deleteStudentWithCourses(Id); //****************************************************
+                        }
+                        else if(Options == 'c'){
+                            cout<<"Insert the teacher ID"<<endl;
+                            cin>>Id;
+                            modifyStudentWithCourses(Id); //****************************************************
                         }
                         else {
                             cout << "ERROR! The typed option does not exist" << endl;
