@@ -1,4 +1,5 @@
 #include <iostream>
+#include <queue>
 using namespace std;
 
 /*
@@ -1225,19 +1226,30 @@ void print(){
 }
 
 bool searchDate(Meeting*meet){
+    /*
     int yr=2021;
     int mth=04;
     int dy=04;
     int hr=17;
     int mins=00;
+     */
+
+    //retorna false si reunion ya pasó  y retorna true si no ha pasado
+
     if(meet->year > yr)
         return true;
     if(yr==meet->year && meet->month > mth)
         return true;
+    if(yr==meet->year && meet->month < mth)
+        return false;
     if(mth==meet->month && meet->day> dy)
         return true;
+    if(mth==meet->month && meet->day < dy)
+        return false;
     if(dy==meet->day && meet->hour> hr)
         return true;
+    if(dy==meet->day && meet->hour< hr)
+        return false;
     if(hr==meet->hour && meet->minute > mins)
         return true;
     return false;
@@ -1552,6 +1564,7 @@ void HardCode(){
     relateStudentCourse(4, "CA1101", 51);
     relateStudentCourse(1, "CA1103", 52);
     relateStudentCourse(1, "CA1298", 52);
+    relateStudentCourse(1, "MA1226", 51);
 
     //Asignar reunión a un profesor
     meetingTeacher(5, "MA1226",51 ,1,  13, 10, 16, 55,18, 04, 2021,  "clase magistral");
@@ -1561,12 +1574,14 @@ void HardCode(){
     meetingTeacher(3, "CA1103",52 ,4,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
     meetingTeacher(2, "CA1558",50 ,5,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
     meetingTeacher(1, "CA1101",51 ,6,  7, 50, 11, 30, 29, 03, 2021,  "clase magistral");
-
+    meetingTeacher(5, "MA1226",51 ,8,  13, 10, 16, 55,18, 03, 2021,  "clase magistral");
+    meetingTeacher(5, "MA1226",51,9,  16, 55, 18, 30,22, 03, 2021,  "clase magistral");
 
     //Estudiantes indican reunion en la que participaron
 
-    //meetingStudent(5, "MA1226", 51, 1);
-    //meetingStudent(5, "MA1226", 51, 2);
+    meetingStudent(5, "MA1226", 51, 8);
+    meetingStudent(5, "MA1226", 51, 9);
+    meetingStudent(1, "MA1226", 51, 9);
 
 
     //----Modificar profesor------
@@ -1658,6 +1673,89 @@ void viewNextMeetings(Teachers*teacher){
     }
 }
 
+void  viewAssists(Teachers*teacher){
+
+    LinkTeacher*temp=teacher->link;
+
+    while(temp != NULL){
+
+
+        Meeting*temp2=temp->firstMeeting;
+
+        while(temp2 != NULL){
+
+
+
+            if(searchDate(temp2)==false) {
+
+                queue<string>ausentes;
+
+                cout << "\nMeenting " << temp2->day << "/" << temp2->month << "/" << temp2->year << " at "
+                     << temp2->hour << ":" << temp2->minute << " " << temp->course->name;
+
+                cout << "\nattended:" << endl;
+
+                Students*students = firstStudent;
+                bool print=false;
+                while (students != NULL) {
+
+                    bool asiste=false;
+                    LinkStudent*courses = students->link;
+
+                    if(courses==NULL){
+                        students=students->next;
+                        continue;
+                    }
+
+                    while (courses != NULL) {
+
+                        SublistAssistance*assistance = courses->sublistAssistance;
+
+
+                        while (assistance != NULL) {
+
+                            if (assistance->id == temp2->id) {
+                                print=true;
+                                asiste=true;
+                                cout <<"\t"<<students->fullName << endl;
+                            }
+
+                            assistance = assistance->next;
+                        }
+                        if(courses->course->code==temp->course->code && courses->group==temp->group){
+                            if(asiste==false){
+                                ausentes.push(students->fullName);
+                            }
+                        }
+
+                        courses = courses->next;
+                    }
+
+                    students = students->next;
+                }
+                if(print==false){
+                    cout<<"\n\tNobody attended"<<endl;
+                }
+
+                cout<<"\nNot attended:"<<endl;
+
+                if(ausentes.size()!=0){
+                    while(ausentes.size()!=0){
+                        cout<<"\t"<<ausentes.back()<<endl;
+                        ausentes.pop();
+                    }
+                }else{
+                    cout<<"\tAll attended"<<endl;
+                }
+
+            }
+
+            temp2 = temp2->next;
+        }
+        temp=temp->next;
+    }
+}
+
 //-----------------------
 //ARRIBA DEL MÉTODO MEETINGSTUDENT ESTAN VARIABLES SIMULANDO UNA FECHA, PARA NO ESTAR INGRESANDO POR CONSOLA TANTO
 //-------------------------
@@ -1688,6 +1786,7 @@ void menu(){
                     cout << "Type 2- To modify a course meeting" << endl;
                     cout << "Type 3- To delete a course meeting" << endl;
                     cout << "Type 4- View meetings for next week" << endl;
+                    cout << "Type 5- View attendance of meetings already held" << endl;
                     cout << "Type 7- To go back to main menu" << endl;
 
                     string optionTeacher;
@@ -1760,7 +1859,13 @@ void menu(){
 
                             viewNextMeetings(teacher);
 
-                        } else if (optionTeacher == "7") {
+                    }else if (optionTeacher == "5") {
+
+
+                        viewAssists(teacher);
+
+                    }else if(optionTeacher == "7") {
+
                         menu();
                     } else
                         cout << "ERROR! The typed option does not exist" << endl;
@@ -2001,8 +2106,6 @@ void menu(){
 
 int main() {
 
-    HardCode();
-
     while(true) {
         hr=00;
         cout<<"Please, type your current time (format: HHHH/DD/MM/AAAA; e.i: 15:20/29/03/2021): " ;
@@ -2016,7 +2119,7 @@ int main() {
         }
         continue;
     }
-
+    HardCode();
     menu();
     //updateTeachersList();
 
